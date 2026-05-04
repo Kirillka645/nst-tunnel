@@ -17,6 +17,10 @@ import java.io.FileOutputStream
 
 object UpdateCheckerManager {
     suspend fun checkForUpdate(includePreRelease: Boolean = false): CheckUpdateResult = withContext(Dispatchers.IO) {
+        if (AppConfig.APP_API_URL.isBlank()) {
+            return@withContext CheckUpdateResult(hasUpdate = false)
+        }
+
         val url = if (includePreRelease) {
             AppConfig.APP_API_URL
         } else {

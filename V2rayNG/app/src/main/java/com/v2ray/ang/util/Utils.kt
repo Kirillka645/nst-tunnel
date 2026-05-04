@@ -167,16 +167,27 @@ object Utils {
             //CIDR
             if (addr.contains("/")) {
                 val arr = addr.split("/")
-                if (arr.size == 2 && arr[1].toIntOrNull() != null && arr[1].toInt() > -1) {
+                val prefix = arr.getOrNull(1)?.toIntOrNull()
+                if (arr.size == 2 && prefix != null && prefix > -1) {
                     addr = arr[0]
+                } else {
+                    return false
                 }
+            }
+
+            if (addr.startsWith("[")) {
+                val end = addr.indexOf(']')
+                if (end <= 0) return false
+                val port = addr.substring(end + 1)
+                if (port.isNotEmpty() && (port.first() != ':' || port.drop(1).toIntOrNull() == null)) {
+                    return false
+                }
+                addr = addr.substring(1, end)
             }
 
             // Handle IPv4-mapped IPv6 addresses
             if (addr.startsWith("::ffff:") && '.' in addr) {
                 addr = addr.drop(7)
-            } else if (addr.startsWith("[::ffff:") && '.' in addr) {
-                addr = addr.drop(8).replace("]", "")
             }
 
             val octets = addr.split('.')
@@ -240,7 +251,11 @@ object Utils {
         if (addr.startsWith("[") && addr.endsWith("]")) {
             addr = addr.drop(1).dropLast(1)
         }
-        return IPV6_REGEX.matches(addr)
+        return IPV6_REGEX.matches(addr) || try {
+            ':' in addr && InetAddress.getByName(addr).address.size == 16
+        } catch (e: Exception) {
+            false
+        }
     }
 
     /**
@@ -568,8 +583,11 @@ object Utils {
             if (!isIpAddress(ip)) return false
 
             // Parse CIDR (e.g., "192.168.1.0/24")
-            val (cidrIp, prefixLen) = cidr.split("/")
-            val prefixLength = prefixLen.toInt()
+            val cidrParts = cidr.split("/")
+            if (cidrParts.size != 2 || !isIpAddress(cidrParts[0])) return false
+            val cidrIp = cidrParts[0]
+            val prefixLength = cidrParts[1].toIntOrNull() ?: return false
+            if (prefixLength !in 0..32) return false
 
             // Convert IP and CIDR's IP portion to Long
             val ipLong = inetAddressToLong(InetAddress.getByName(ip))

@@ -1,5 +1,23 @@
 <notices>
     <notice>
+        <name>v2rayNG</name>
+        <url>https://github.com/2dust/v2rayNG</url>
+        <copyright>Copyright v2rayNG contributors</copyright>
+        <license>GNU General Public License v3.0</license>
+    </notice>
+    <notice>
+        <name>Xray-core</name>
+        <url>https://github.com/XTLS/Xray-core</url>
+        <copyright>Copyright Xray-core contributors</copyright>
+        <license>Mozilla Public License 2.0</license>
+    </notice>
+    <notice>
+        <name>hev-socks5-tunnel</name>
+        <url>https://github.com/heiher/hev-socks5-tunnel</url>
+        <copyright>Copyright hev-socks5-tunnel contributors</copyright>
+        <license>MIT License</license>
+    </notice>
+    <notice>
         <name>Android Compatibility Library v4</name>
         <url>http://source.android.com</url>
         <copyright>Copyright(C) 2008-2011 The Android Open Source Project</copyright>

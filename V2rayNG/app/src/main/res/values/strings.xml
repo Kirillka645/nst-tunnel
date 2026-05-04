@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">v2rayNG</string>
-    <string name="app_widget_name">Switch</string>
-    <string name="app_tile_name">Switch</string>
+    <string name="app_name" translatable="false">NST Tunnel</string>
+    <string name="app_widget_name">NST Tunnel</string>
+    <string name="app_tile_name">NST Tunnel</string>
     <string name="app_tile_first_use">First use of this feature, please use the app to add server</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -146,7 +146,7 @@
     <string name="menu_item_import_proxy_app">Import from Clipboard</string>
     <string name="per_app_proxy_settings">Per-app settings</string>
     <string name="per_app_proxy_settings_enable">Enable per-app</string>
-    <string name="app_picker_unknown_app">Unknown app (unidentified UID)</string>
+    <string name="app_picker_unknown_app" translatable="false">Unknown app (unidentified UID)</string>
 
     <!-- Preferences -->
     <string name="title_settings">Settings</string>
@@ -260,8 +260,8 @@
 
     <!-- AboutActivity -->
     <string name="title_pref_feedback">Feedback</string>
-    <string name="summary_pref_feedback">Feedback enhancements or bugs to GitHub</string>
-    <string name="summary_pref_tg_group">Join Telegram Group</string>
+    <string name="summary_pref_feedback">Open the upstream issue tracker</string>
+    <string name="summary_pref_tg_group">Open the upstream Telegram channel</string>
     <string name="toast_tg_app_not_found">Telegram app not found</string>
     <string name="title_privacy_policy">Privacy policy</string>
     <string name="title_qr_code">QR code</string>
@@ -345,7 +345,7 @@
     <string name="routing_settings_locked">Locked, keep this rule when import presets</string>
     <string name="routing_settings_domain">domain</string>
     <string name="routing_settings_ip">ip</string>
-    <string name="routing_settings_process">process (Package Name — only supported when using Xray TUN, routeOnly enabled, and Android 10+)</string>
+    <string name="routing_settings_process" translatable="false">process (Package Name — only supported when using Xray TUN, routeOnly enabled, and Android 10+)</string>
     <string name="routing_settings_port">port</string>
     <string name="routing_settings_protocol">protocol</string>
     <string name="routing_settings_protocol_tip">[http,tls,bittorrent]</string>

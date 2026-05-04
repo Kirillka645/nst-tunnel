@@ -163,7 +163,7 @@ object HttpUtil {
             if (currentUrl == null) continue
             val client = buildOkHttpClient(timeout, httpPort, proxyUsername, proxyPassword, followRedirects = false)
             val finalUserAgent = if (userAgent.isNullOrBlank()) {
-                "v2rayNG/${BuildConfig.VERSION_NAME}"
+                "NSTTunnel/${BuildConfig.VERSION_NAME}"
             } else {
                 userAgent
             }
@@ -290,4 +290,3 @@ object HttpUtil {
         }
     }
 }
-

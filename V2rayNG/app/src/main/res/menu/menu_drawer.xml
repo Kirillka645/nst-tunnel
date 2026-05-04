@@ -28,17 +28,9 @@
 
     <group android:id="@+id/group_id2">
         <item
-            android:id="@+id/promotion"
-            android:icon="@drawable/ic_promotion_24dp"
-            android:title="@string/title_pref_promotion" />
-        <item
             android:id="@+id/logcat"
             android:icon="@drawable/ic_logcat_24dp"
             android:title="@string/title_logcat" />
-        <item
-            android:id="@+id/check_for_update"
-            android:icon="@drawable/ic_check_update_24dp"
-            android:title="@string/update_check_for_update" />
         <item
             android:id="@+id/backup_restore"
             android:icon="@drawable/ic_restore_24dp"
