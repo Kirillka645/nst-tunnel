@@ -1,0 +1,7 @@
+<p>NST Tunnel is an Android VPN/proxy client based on the GPL-3.0 v2rayNG codebase.</p>
+
+<p>It supports common Xray/v2fly-core profile types, Android VPN mode through VpnService, profile import from links and QR codes, subscriptions, routing settings, logs, and per-app proxy options.</p>
+
+<p>geoip.dat and geosite.dat files are stored in the app assets directory under <code>Android/data/com.nstkir.nsttunnel/files/assets</code> on most devices.</p>
+
+<p>Upstream project: <a href="https://github.com/2dust/v2rayNG">2dust/v2rayNG</a></p>
