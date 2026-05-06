@@ -8,17 +8,21 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/bg_main_screen"
         android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/nst_surface"
+            android:elevation="0dp">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" />
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/nst_surface" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -34,6 +38,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:paddingStart="@dimen/padding_spacing_dp8"
+                    android:paddingEnd="@dimen/padding_spacing_dp8"
                     android:orientation="vertical">
 
                     <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -48,6 +54,8 @@
                         android:id="@+id/tab_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/padding_spacing_dp4"
+                        android:background="@drawable/bg_tabs_panel"
                         app:tabIndicatorFullWidth="false"
                         app:tabMode="scrollable"
                         app:tabTextAppearance="@style/TabLayoutTextStyle" />
@@ -56,36 +64,96 @@
                         android:id="@+id/view_pager"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
+                        android:layout_marginTop="@dimen/padding_spacing_dp8"
                         android:nextFocusRight="@+id/fab"
                         android:scrollbars="vertical"
                         android:layout_weight="1" />
 
                     <LinearLayout
-                        android:id="@+id/layout_test"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/view_height_dp64"
-                        android:clickable="true"
-                        android:contentDescription="@string/connection_test_pending"
-                        android:focusable="true"
-                        android:nextFocusLeft="@+id/view_pager"
-                        android:nextFocusRight="@+id/fab"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/padding_spacing_dp8"
+                        android:layout_marginTop="@dimen/padding_spacing_dp8"
+                        android:layout_marginEnd="@dimen/padding_spacing_dp8"
+                        android:layout_marginBottom="@dimen/padding_spacing_dp8"
+                        android:background="@drawable/bg_bottom_panel"
+                        android:elevation="4dp"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding_spacing_dp8">
 
-                        <View
-                            android:layout_width="wrap_content"
-                            android:layout_height="1dp"
-                            android:background="@color/divider_color_light" />
-
-                        <TextView
-                            android:id="@+id/tv_test_state"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="start|center"
-                            android:maxLines="2"
-                            android:minLines="1"
+                        <LinearLayout
+                            android:id="@+id/layout_test"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/view_height_dp48"
+                            android:background="@drawable/bg_connection_status"
+                            android:clickable="true"
+                            android:contentDescription="@string/connection_test_pending"
+                            android:focusable="true"
+                            android:nextFocusLeft="@+id/view_pager"
+                            android:nextFocusRight="@+id/fab"
+                            android:orientation="horizontal"
                             android:paddingStart="@dimen/padding_spacing_dp16"
-                            android:text="@string/connection_test_pending"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                            android:paddingEnd="@dimen/padding_spacing_dp16">
+
+                            <TextView
+                                android:id="@+id/tv_test_state"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="start|center"
+                                android:maxLines="2"
+                                android:minLines="1"
+                                android:text="@string/connection_test_pending"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/layout_quick_actions"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/view_height_dp48"
+                            android:layout_marginTop="@dimen/padding_spacing_dp8"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_test_all_profiles"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginEnd="@dimen/padding_spacing_dp4"
+                                android:layout_weight="1"
+                                android:contentDescription="@string/action_check_all_profiles"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/action_check_all_profiles"
+                                android:textColor="@color/md_theme_onSecondary"
+                                app:backgroundTint="@color/md_theme_secondary"
+                                app:cornerRadius="16dp"
+                                app:icon="@drawable/ic_select_all_24dp"
+                                app:iconGravity="textStart"
+                                app:iconPadding="@dimen/padding_spacing_dp8"
+                                app:iconTint="@color/md_theme_onSecondary" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_import_clipboard"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/padding_spacing_dp4"
+                                android:layout_weight="1"
+                                android:contentDescription="@string/action_paste_from_clipboard"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/action_paste_from_clipboard"
+                                android:textColor="@color/md_theme_onSurface"
+                                app:backgroundTint="@color/nst_surface"
+                                app:cornerRadius="16dp"
+                                app:icon="@drawable/ic_content_paste_24dp"
+                                app:iconGravity="textStart"
+                                app:iconPadding="@dimen/padding_spacing_dp8"
+                                app:iconTint="@color/md_theme_onSurface"
+                                app:strokeColor="@color/md_theme_outlineVariant"
+                                app:strokeWidth="1dp" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
                 </LinearLayout>
@@ -94,7 +162,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
-                    android:layout_marginBottom="-16dp"
+                    android:layout_marginBottom="112dp"
                     android:layout_marginEnd="@dimen/padding_spacing_dp16">
 
                     <com.google.android.material.floatingactionbutton.FloatingActionButton

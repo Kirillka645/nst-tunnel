@@ -358,6 +358,8 @@
     <string name="connection_connected">منپیز هڌ، سی واجۊری کیلیک کوݩ</string>
     <string name="connection_not_connected">منپیز نؽڌ</string>
     <string name="connection_runing_task_left">تعداد وزیفه یل آزمایشی ک ره اۊفتانه: %s</string>
+    <string name="action_check_all_profiles">Check all</string>
+    <string name="action_paste_from_clipboard">Paste</string>
 
     <string name="import_subscription_success">اشتراک وا موفقیت زفت زابی</string>
     <string name="import_subscription_failure">اشتراک زفت نوابی</string>

@@ -96,6 +96,8 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
         binding.fab.setOnClickListener { handleFabAction() }
         binding.layoutTest.setOnClickListener { handleLayoutTestClick() }
+        binding.btnTestAllProfiles.setOnClickListener { testAllProfilesInCurrentTab() }
+        binding.btnImportClipboard.setOnClickListener { importClipboard() }
 
         setupGroupTab()
         setupViewModel()
@@ -157,6 +159,16 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         } else {
             // service not running: keep existing no-op (could show a message if desired)
         }
+    }
+
+    private fun testAllProfilesInCurrentTab() {
+        val count = mainViewModel.serversCache.count()
+        if (count == 0) {
+            toast(R.string.toast_none_data)
+            return
+        }
+        toast(getString(R.string.connection_test_testing_count, count))
+        mainViewModel.testAllRealPing()
     }
 
     private fun startV2Ray() {
@@ -305,14 +317,14 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         }
 
         R.id.ping_all -> {
-            toast(getString(R.string.connection_test_testing_count, mainViewModel.serversCache.count()))
+            val count = mainViewModel.serversCache.count()
+            toast(getString(R.string.connection_test_testing_count, count))
             mainViewModel.testAllTcping()
             true
         }
 
         R.id.real_ping_all -> {
-            toast(getString(R.string.connection_test_testing_count, mainViewModel.serversCache.count()))
-            mainViewModel.testAllRealPing()
+            testAllProfilesInCurrentTab()
             true
         }
 
