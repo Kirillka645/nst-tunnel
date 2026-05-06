@@ -87,7 +87,6 @@
                             android:layout_height="@dimen/view_height_dp48"
                             android:background="@drawable/bg_connection_status"
                             android:clickable="true"
-                            android:contentDescription="@string/connection_test_pending"
                             android:focusable="true"
                             android:nextFocusLeft="@+id/view_pager"
                             android:nextFocusRight="@+id/fab"

@@ -191,6 +191,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
     private fun setTestState(content: String?) {
         binding.tvTestState.text = content
+        binding.layoutTest.contentDescription = content
     }
 
     private fun applyRunningState(isLoading: Boolean, isRunning: Boolean) {
