@@ -15,6 +15,8 @@ import '../profile.dart';
 class ShareUriParser {
   ShareUriParser._();
 
+  static final _shareUriPattern = RegExp(r'^(vmess|vless|trojan|ss)://');
+
   static Profile parse(String uri) {
     final trimmed = uri.trim();
     if (trimmed.startsWith('vmess://')) return _parseVmess(trimmed);
@@ -25,12 +27,63 @@ class ShareUriParser {
   }
 
   /// Detects whether [text] contains a share URI we know how to parse.
-  static bool isShareUri(String text) {
+  static bool isShareUri(String text) =>
+      _shareUriPattern.hasMatch(text.trim());
+
+  /// True iff [text] looks like a `http(s)://` URL — used to decide whether
+  /// the input should be treated as a subscription source instead of a
+  /// directly-parseable share URI.
+  static bool isSubscriptionUrl(String text) {
     final t = text.trim();
-    return t.startsWith('vmess://') ||
-        t.startsWith('vless://') ||
-        t.startsWith('trojan://') ||
-        t.startsWith('ss://');
+    return t.startsWith('http://') || t.startsWith('https://');
+  }
+
+  /// Parses multi-line subscription content into a list of [Profile]s.
+  ///
+  /// Handles every shape we see in the wild:
+  ///   * One share URI per line — RKP-style plain-text lists.
+  ///   * Whole payload base64-encoded — classic v2rayN / SSR subscription
+  ///     format. Auto-detected: if base64-decoding the entire trimmed body
+  ///     yields a string containing share URIs, that decoded string is used.
+  ///   * Comment / metadata lines starting with `#` — silently skipped
+  ///     (e.g. `#profile-title:`, `#subscription-userinfo:` from RKP).
+  ///   * Blank lines.
+  ///   * Individual malformed URIs — skipped, the rest of the list still
+  ///     imports. We never fail a whole batch because of one bad entry.
+  static List<Profile> parseList(String content) {
+    final body = _maybeBase64Decode(content);
+
+    final profiles = <Profile>[];
+    for (final raw in body.split(RegExp(r'[\r\n]+'))) {
+      final line = raw.trim();
+      if (line.isEmpty) continue;
+      if (line.startsWith('#')) continue;
+      if (!isShareUri(line)) continue;
+      try {
+        profiles.add(parse(line));
+      } on FormatException {
+        // Skip malformed individual URIs but keep importing the rest.
+      } catch (_) {
+        // Same — never let one bad entry break the whole subscription.
+      }
+    }
+    return profiles;
+  }
+
+  /// If [content] looks like a base64-encoded subscription payload AND
+  /// decoding yields a string with share URIs in it, return the decoded
+  /// text. Otherwise return [content] verbatim. The heuristic intentionally
+  /// only swaps when the result is a *better* candidate than the input.
+  static String _maybeBase64Decode(String content) {
+    final trimmed = content.trim();
+    if (_shareUriPattern.hasMatch(trimmed)) return trimmed; // already plain text
+    try {
+      final decoded = _b64Decode(trimmed);
+      if (RegExp(r'(vmess|vless|trojan|ss)://').hasMatch(decoded)) {
+        return decoded;
+      }
+    } catch (_) {/* not base64 — fall through */}
+    return trimmed;
   }
 
   // -------------------------------------------------------------------------
@@ -70,7 +123,7 @@ class ShareUriParser {
   static Profile _parseVlessLike(String uriString, ProtocolType protocol) {
     final Uri uri;
     try {
-      uri = Uri.parse(uriString);
+      uri = Uri.parse(_sanitiseShareUri(uriString));
     } catch (_) {
       throw FormatException('Cannot parse ${protocol.displayName} URI');
     }
@@ -158,5 +211,67 @@ class ShareUriParser {
     final pad = (4 - s.length % 4) % 4;
     s = s + ('=' * pad);
     return utf8.decode(base64.decode(s));
+  }
+
+  /// Aggressively sanitises a share URI before handing it to `Uri.parse`.
+  ///
+  /// Real-world share links are notorious for non-RFC-3986 cruft: stray
+  /// `"`, `,`, `\`, embedded JSON like `extra={"host":"",...}`, leftover
+  /// closing-quote chains like `headerType=none",,#…`. Java's `URI` and
+  /// Dart's `Uri.parse` both refuse those, so we scrub them per RFC 3986
+  /// query/fragment rules:
+  ///   - Inside the query (between `?` and the LAST `#`): percent-encode
+  ///     every byte outside the legal `pchar` set.
+  ///   - In the fragment (after `#`): same scrubbing.
+  ///   - Path/authority untouched.
+  ///
+  /// Also normalises space → `%20` and `|` → `%7C` to match the upstream
+  /// Android `Utils.fixIllegalUrl`.
+  static String _sanitiseShareUri(String input) {
+    final qIdx = input.indexOf('?');
+    if (qIdx < 0) {
+      return input.replaceAll(' ', '%20').replaceAll('|', '%7C');
+    }
+    // Fragment marker is the LAST '#' so embedded `#` inside query values
+    // (very rare but we've seen it) doesn't truncate the query.
+    final fIdx = input.lastIndexOf('#');
+    final hasFragment = fIdx > qIdx;
+
+    final scheme = input.substring(0, qIdx + 1); // includes the '?'
+    final query = hasFragment
+        ? input.substring(qIdx + 1, fIdx)
+        : input.substring(qIdx + 1);
+    final fragmentPart = hasFragment ? input.substring(fIdx) : ''; // includes '#'
+
+    final encodedQuery = _encodeUnsafe(query, _queryAllowed);
+    final encodedFragment = fragmentPart.isEmpty
+        ? ''
+        : '#${_encodeUnsafe(fragmentPart.substring(1), _fragmentAllowed)}';
+    return '$scheme$encodedQuery$encodedFragment';
+  }
+
+  // RFC 3986 query / fragment allowed sets (excluding percent — already-encoded
+  // sequences like `%22` pass through unchanged because `%` is in the set and
+  // the trailing two hex chars are ASCII alphanumerics).
+  static const _queryAllowed =
+      r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~!\$&'()*+,;=:@/?%";
+  static const _fragmentAllowed = _queryAllowed;
+
+  static String _encodeUnsafe(String raw, String allowed) {
+    final out = StringBuffer();
+    for (final code in raw.codeUnits) {
+      final ch = String.fromCharCode(code);
+      if (allowed.contains(ch) && code < 0x80) {
+        out.write(ch);
+      } else if (code < 0x80) {
+        out.write('%${code.toRadixString(16).toUpperCase().padLeft(2, '0')}');
+      } else {
+        // Multi-byte UTF-8: encode as bytes.
+        for (final b in utf8.encode(ch)) {
+          out.write('%${b.toRadixString(16).toUpperCase().padLeft(2, '0')}');
+        }
+      }
+    }
+    return out.toString();
   }
 }

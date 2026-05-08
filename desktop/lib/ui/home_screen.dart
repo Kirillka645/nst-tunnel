@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../data/parsers/uri_parser.dart';
 import '../data/profile.dart';
 import '../data/profile_repository.dart';
+import '../data/subscription_fetcher.dart';
 import '../service/xray_service.dart';
 import '../theme/app_theme.dart';
 import 'dialogs/import_uri_dialog.dart';
@@ -131,17 +132,39 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Decides what to do with the clipboard text:
+  ///   * `http(s)://...`       → fetch as subscription, import all parsed profiles
+  ///   * `vmess|vless|trojan|ss://...` → parse as a single share URI
+  ///   * multi-line block containing share URIs → parse all valid lines
+  ///   * anything else → friendly error in SnackBar
   Future<void> _quickImportFromClipboard() async {
     final data = await Clipboard.getData('text/plain');
-    if (data?.text == null) return;
-    final text = data!.text!.trim();
-    if (!ShareUriParser.isShareUri(text)) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Clipboard does not contain a share link')),
-      );
+    final text = data?.text?.trim();
+    if (text == null || text.isEmpty) return;
+
+    if (ShareUriParser.isSubscriptionUrl(text)) {
+      await _importSubscription(text);
       return;
     }
+    if (ShareUriParser.isShareUri(text)) {
+      await _importSingleUri(text);
+      return;
+    }
+    // Fall back to multi-line parser — clipboard may contain a pasted block.
+    final batch = ShareUriParser.parseList(text);
+    if (batch.isNotEmpty) {
+      await _addProfiles(batch);
+      return;
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Clipboard does not contain a share link or subscription URL'),
+      ),
+    );
+  }
+
+  Future<void> _importSingleUri(String text) async {
     try {
       final profile = ShareUriParser.parse(text);
       if (!mounted) return;
@@ -154,6 +177,59 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     }
+  }
+
+  Future<void> _importSubscription(String url) async {
+    // Long fetches need a visible "working…" indicator, hence the indeterminate
+    // SnackBar. We dismiss it explicitly when the fetch completes.
+    final messenger = ScaffoldMessenger.of(context);
+    final ctrl = messenger.showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 30),
+        content: Row(
+          children: const [
+            SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            SizedBox(width: 12),
+            Expanded(child: Text('Fetching subscription…')),
+          ],
+        ),
+      ),
+    );
+    try {
+      final profiles = await SubscriptionFetcher.fetch(url);
+      ctrl.close();
+      if (!mounted) return;
+      if (profiles.isEmpty) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Subscription URL returned no usable servers')),
+        );
+        return;
+      }
+      await _addProfiles(profiles);
+    } on FormatException catch (e) {
+      ctrl.close();
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      ctrl.close();
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text('Subscription fetch failed: $e')));
+    }
+  }
+
+  Future<void> _addProfiles(List<Profile> profiles) async {
+    final repo = context.read<ProfileRepository>();
+    for (final p in profiles) {
+      await repo.add(p);
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Imported ${profiles.length} server(s)')),
+    );
   }
 
   Future<void> _confirmDelete(Profile p) async {
