@@ -12,8 +12,8 @@ android {
         applicationId = "com.nstkir.nsttunnel"
         minSdk = 24
         targetSdk = 36
-        versionCode = 726
-        versionName = "2.1.6"
+        versionCode = 1700
+        versionName = "2.17"
         multiDexEnabled = true
 
         val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
@@ -40,11 +40,16 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            // Keep debug fast: no minification, no resource shrinking.
+            isMinifyEnabled = false
         }
     }
 
@@ -156,6 +161,7 @@ dependencies {
     implementation(libs.toasty)
     implementation(libs.editorkit)
     implementation(libs.flexbox)
+    implementation(libs.androidx.core.splashscreen)
 
     // Data and Storage Libraries
     implementation(libs.mmkv.static)

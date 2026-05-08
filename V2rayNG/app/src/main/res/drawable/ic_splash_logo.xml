@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Splash icon: stylised double chevron inside a shield outline.
+    Symbolises tunnelled traffic moving forward through a secure boundary.
+    Coloured with brand orange (?attr/colorSecondary) so it adapts to dynamic colors when enabled.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Shield outline (warm-neutral tonal surface, primary container) -->
+    <path
+        android:pathData="M54,18 L84,30 V58 C84,72 70,86 54,90 C38,86 24,72 24,58 V30 Z"
+        android:strokeWidth="3"
+        android:strokeColor="?attr/colorPrimary"
+        android:fillColor="?attr/colorPrimaryContainer" />
+
+    <!-- First chevron — slightly faded for depth -->
+    <path
+        android:pathData="M40,42 L52,54 L40,66"
+        android:strokeWidth="6"
+        android:strokeColor="?attr/colorSecondary"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillAlpha="0"
+        android:fillColor="@android:color/transparent"
+        android:alpha="0.55" />
+
+    <!-- Second chevron — main accent -->
+    <path
+        android:pathData="M56,42 L68,54 L56,66"
+        android:strokeWidth="6"
+        android:strokeColor="?attr/colorSecondary"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillAlpha="0"
+        android:fillColor="@android:color/transparent" />
+
+</vector>

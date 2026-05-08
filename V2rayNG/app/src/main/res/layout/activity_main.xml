@@ -1,28 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Edge-to-edge ready main layout.
+
+    DrawerLayout is the window root: no `fitsSystemWindows="true"` because
+    MainActivity.applyEdgeToEdgeInsets() dispatches window insets to the
+    children that actually need them (Toolbar, FAB, NavigationView, bottom panel).
+
+    Background uses `?attr/colorSurface` so the screen blends with the splash
+    and system bars — no flash of black on launch.
+
+    Keeps the quick-actions panel introduced in 2.1.6 (Test All Profiles +
+    Paste from Clipboard) but restyled with Material-3 attribute colours so
+    light/dark and dynamic palettes pick up automatically.
+-->
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_main_screen"
-        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
+        <!--
+            AppBar with M3 lift-on-scroll: gains elevation tint as content scrolls
+            under it, replacing the old hardcoded shadow.
+        -->
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/nst_surface"
-            android:elevation="0dp">
+            android:background="?attr/colorSurface"
+            app:liftOnScroll="true"
+            app:liftOnScrollColor="?attr/colorSurfaceContainer">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/nst_surface" />
+                android:background="?attr/colorSurface"
+                app:titleTextAppearance="?attr/textAppearanceTitleLarge"
+                app:titleTextColor="?attr/colorOnSurface" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -38,55 +59,67 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingStart="@dimen/padding_spacing_dp8"
-                    android:paddingEnd="@dimen/padding_spacing_dp8"
                     android:orientation="vertical">
 
+                    <!-- Indeterminate progress lives directly under the toolbar; recolours via theme. -->
                     <com.google.android.material.progressindicator.LinearProgressIndicator
                         android:id="@+id/progress_bar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:indeterminate="true"
                         android:visibility="invisible"
-                        app:indicatorColor="@color/color_fab_active" />
+                        app:indicatorColor="?attr/colorSecondary"
+                        app:trackColor="?attr/colorSurfaceContainerHigh" />
 
                     <com.google.android.material.tabs.TabLayout
                         android:id="@+id/tab_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/padding_spacing_dp4"
-                        android:background="@drawable/bg_tabs_panel"
+                        android:background="?attr/colorSurface"
+                        app:tabIndicatorAnimationMode="elastic"
+                        app:tabIndicatorColor="?attr/colorSecondary"
                         app:tabIndicatorFullWidth="false"
                         app:tabMode="scrollable"
-                        app:tabTextAppearance="@style/TabLayoutTextStyle" />
+                        app:tabRippleColor="?attr/colorSurfaceContainerHigh"
+                        app:tabSelectedTextColor="?attr/colorSecondary"
+                        app:tabTextAppearance="@style/TabLayoutTextStyle"
+                        app:tabTextColor="?attr/colorOnSurfaceVariant" />
 
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/view_pager"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_marginTop="@dimen/padding_spacing_dp8"
+                        android:layout_weight="1"
+                        android:background="?attr/colorSurface"
                         android:nextFocusRight="@+id/fab"
-                        android:scrollbars="vertical"
-                        android:layout_weight="1" />
+                        android:scrollbars="vertical" />
 
+                    <!--
+                        Bottom action strip — status line on top, quick-action buttons beneath.
+                        The activity adds a bottom system-bar inset as padding, keeping
+                        everything visible above the gesture-navigation pill.
+                    -->
                     <LinearLayout
+                        android:id="@+id/layout_bottom_panel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/padding_spacing_dp8"
                         android:layout_marginTop="@dimen/padding_spacing_dp8"
                         android:layout_marginEnd="@dimen/padding_spacing_dp8"
                         android:layout_marginBottom="@dimen/padding_spacing_dp8"
-                        android:background="@drawable/bg_bottom_panel"
-                        android:elevation="4dp"
+                        android:background="?attr/colorSurfaceContainerLow"
+                        android:elevation="1dp"
                         android:orientation="vertical"
                         android:padding="@dimen/padding_spacing_dp8">
 
+                        <!-- Test / latency / state row. -->
                         <LinearLayout
                             android:id="@+id/layout_test"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/view_height_dp48"
-                            android:background="@drawable/bg_connection_status"
+                            android:background="?attr/colorSurfaceContainer"
                             android:clickable="true"
+                            android:contentDescription="@string/connection_test_pending"
                             android:focusable="true"
                             android:nextFocusLeft="@+id/view_pager"
                             android:nextFocusRight="@+id/fab"
@@ -99,14 +132,16 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:gravity="start|center"
+                                android:gravity="start|center_vertical"
                                 android:maxLines="2"
                                 android:minLines="1"
                                 android:text="@string/connection_test_pending"
-                                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                                android:textAppearance="?attr/textAppearanceBodyMedium"
+                                android:textColor="?attr/colorOnSurfaceVariant" />
 
                         </LinearLayout>
 
+                        <!-- Quick-actions row (introduced in 2.1.6). -->
                         <LinearLayout
                             android:id="@+id/layout_quick_actions"
                             android:layout_width="match_parent"
@@ -124,13 +159,13 @@
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
                                 android:text="@string/action_check_all_profiles"
-                                android:textColor="@color/md_theme_onSecondary"
-                                app:backgroundTint="@color/md_theme_secondary"
+                                android:textColor="?attr/colorOnSecondary"
+                                app:backgroundTint="?attr/colorSecondary"
                                 app:cornerRadius="16dp"
                                 app:icon="@drawable/ic_select_all_24dp"
                                 app:iconGravity="textStart"
                                 app:iconPadding="@dimen/padding_spacing_dp8"
-                                app:iconTint="@color/md_theme_onSecondary" />
+                                app:iconTint="?attr/colorOnSecondary" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_import_clipboard"
@@ -142,44 +177,42 @@
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
                                 android:text="@string/action_paste_from_clipboard"
-                                android:textColor="@color/md_theme_onSurface"
-                                app:backgroundTint="@color/nst_surface"
+                                android:textColor="?attr/colorOnSurface"
+                                app:backgroundTint="?attr/colorSurfaceContainerHigh"
                                 app:cornerRadius="16dp"
                                 app:icon="@drawable/ic_content_paste_24dp"
                                 app:iconGravity="textStart"
                                 app:iconPadding="@dimen/padding_spacing_dp8"
-                                app:iconTint="@color/md_theme_onSurface"
-                                app:strokeColor="@color/md_theme_outlineVariant"
+                                app:iconTint="?attr/colorOnSurface"
+                                app:strokeColor="?attr/colorOutlineVariant"
                                 app:strokeWidth="1dp" />
 
                         </LinearLayout>
-
                     </LinearLayout>
                 </LinearLayout>
 
-                <FrameLayout
+                <!--
+                    FAB anchored above the bottom panel. Large bottom margin (136 dp)
+                    clears the status-row + quick-actions combo; MainActivity adds the
+                    system-bar inset on top so gesture navigation doesn't cover it.
+                -->
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
-                    android:layout_marginBottom="112dp"
-                    android:layout_marginEnd="@dimen/padding_spacing_dp16">
+                    android:layout_marginEnd="@dimen/padding_spacing_dp16"
+                    android:layout_marginBottom="136dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/tasker_start_service"
+                    android:focusable="true"
+                    android:nextFocusLeft="@+id/layout_test"
+                    android:src="@drawable/ic_play_24dp"
+                    app:backgroundTint="@color/color_fab_inactive"
+                    app:tint="?attr/colorOnSecondary"
+                    app:useCompatPadding="true"
+                    tools:ignore="ContentDescription" />
 
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/fab"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|end"
-                        android:layout_marginBottom="@dimen/view_height_dp36"
-                        android:clickable="true"
-                        android:contentDescription="@string/tasker_start_service"
-                        android:focusable="true"
-                        android:nextFocusLeft="@+id/layout_test"
-                        android:src="@drawable/ic_play_24dp"
-                        app:tint="@color/colorWhite"
-                        app:useCompatPadding="true"
-                        app:layout_anchorGravity="bottom|right|end" />
-
-                </FrameLayout>
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
         </RelativeLayout>
     </LinearLayout>
@@ -189,9 +222,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="?attr/colorSurfaceContainer"
+        android:fitsSystemWindows="false"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/menu_drawer">
-
-    </com.google.android.material.navigation.NavigationView>
+        app:menu="@menu/menu_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
