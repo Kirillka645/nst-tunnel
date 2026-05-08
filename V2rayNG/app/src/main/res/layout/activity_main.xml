@@ -29,11 +29,18 @@
         <!--
             AppBar with M3 lift-on-scroll: gains elevation tint as content scrolls
             under it, replacing the old hardcoded shadow.
+
+            Edge-to-edge: status-bar inset is applied as TOP PADDING on the AppBarLayout
+            (which is wrap_content and therefore grows to fit), NOT on the Toolbar
+            (whose height is fixed at ?attr/actionBarSize = 56dp, so padding would
+            clip the title).
         -->
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorSurface"
+            android:clipToPadding="false"
             app:liftOnScroll="true"
             app:liftOnScrollColor="?attr/colorSurfaceContainer">
 

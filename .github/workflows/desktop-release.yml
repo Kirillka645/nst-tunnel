@@ -48,11 +48,21 @@ jobs:
         working-directory: desktop
         run: flutter build windows --release
 
+      - name: Derive version label from tag
+        id: ver
+        shell: pwsh
+        # Strips a leading "v" and a trailing "-nst" so e.g. v2.17.1-nst -> 2.17.1.
+        run: |
+          $tag = "${{ inputs.release_tag }}"
+          $ver = $tag -replace '^v','' -replace '-nst$',''
+          "version=$ver" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "version=$ver"
+
       - name: Package release folder as .zip
         shell: pwsh
         working-directory: desktop/build/windows/x64/runner
         run: |
-          $zipName = "NSTTunnel-2.17-windows-x64.zip"
+          $zipName = "NSTTunnel-${{ steps.ver.outputs.version }}-windows-x64.zip"
           Compress-Archive -Path Release\* -DestinationPath ..\..\..\..\..\$zipName -Force
           Get-ChildItem ..\..\..\..\..\$zipName | Format-List Length, FullName
 
@@ -60,7 +70,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_tag }}
-          files: NSTTunnel-2.17-windows-x64.zip
+          files: NSTTunnel-${{ steps.ver.outputs.version }}-windows-x64.zip
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -99,6 +109,16 @@ jobs:
         # once a signing certificate is available.
         run: flutter build macos --release
 
+      - name: Derive version label from tag
+        id: ver
+        # Strips a leading "v" and a trailing "-nst" so e.g. v2.17.1-nst -> 2.17.1.
+        run: |
+          tag="${{ inputs.release_tag }}"
+          ver="${tag#v}"
+          ver="${ver%-nst}"
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "version=$ver"
+
       - name: Rename .app and create DMG
         working-directory: desktop/build/macos/Build/Products/Release
         run: |
@@ -111,8 +131,8 @@ jobs:
           cp -R NSTTunnel.app "$STAGE/"
           ln -s /Applications "$STAGE/Applications"
 
-          DMG_PATH="$GITHUB_WORKSPACE/NSTTunnel-2.17-macos.dmg"
-          hdiutil create -volname "NSTTunnel 2.17" \
+          DMG_PATH="$GITHUB_WORKSPACE/NSTTunnel-${{ steps.ver.outputs.version }}-macos.dmg"
+          hdiutil create -volname "NSTTunnel ${{ steps.ver.outputs.version }}" \
                          -srcfolder "$STAGE" \
                          -ov -format UDZO \
                          "$DMG_PATH"
@@ -122,7 +142,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_tag }}
-          files: NSTTunnel-2.17-macos.dmg
+          files: NSTTunnel-${{ steps.ver.outputs.version }}-macos.dmg
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

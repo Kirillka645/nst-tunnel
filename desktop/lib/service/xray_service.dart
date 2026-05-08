@@ -88,31 +88,33 @@ class XrayService extends ChangeNotifier {
       throw UnsupportedError('Unsupported host platform: ${Platform.operatingSystem}');
     }
 
-    // 1. Look up the latest release.
-    final releaseRes = await http.get(
-      Uri.parse('https://api.github.com/repos/XTLS/Xray-core/releases/latest'),
-      headers: {'Accept': 'application/vnd.github+json'},
-    );
-    if (releaseRes.statusCode != 200) {
-      throw HttpException('GitHub releases API returned ${releaseRes.statusCode}');
-    }
-    final release = jsonDecode(releaseRes.body) as Map<String, dynamic>;
-    final assets = (release['assets'] as List).cast<Map<String, dynamic>>();
-    final asset = assets.firstWhere(
-      (a) => a['name'] == assetName,
-      orElse: () => throw StateError('Asset $assetName not found in latest release'),
-    );
-    final downloadUrl = asset['browser_download_url'] as String;
+    // GitHub publishes a stable URL pattern that 302-redirects to the latest
+    // release asset:
+    //
+    //   https://github.com/{owner}/{repo}/releases/latest/download/{asset}
+    //
+    // Using it instead of the JSON API (api.github.com/repos/.../releases/latest)
+    // avoids the 60-requests/hour anonymous rate limit — `api.github.com` returns
+    // 403 once exhausted, while the redirect endpoint is unmetered. The Dart
+    // http client follows the redirect transparently.
+    final downloadUrl =
+        'https://github.com/XTLS/Xray-core/releases/latest/download/$assetName';
 
-    // 2. Stream the zip to a temp file with progress.
+    // Stream the zip to a temp file with progress.
     final dir = await _ensureAppDir();
     final tmp = File(p.join(dir.path, 'xray-download.zip'));
     if (tmp.existsSync()) tmp.deleteSync();
 
     final client = http.Client();
     try {
-      final req = http.Request('GET', Uri.parse(downloadUrl));
+      final req = http.Request('GET', Uri.parse(downloadUrl))
+        ..followRedirects = true;
       final res = await client.send(req);
+      if (res.statusCode != 200) {
+        throw HttpException(
+          'Xray-core download failed: HTTP ${res.statusCode} from $downloadUrl',
+        );
+      }
       final total = res.contentLength ?? 0;
       var received = 0;
       final sink = tmp.openWrite();

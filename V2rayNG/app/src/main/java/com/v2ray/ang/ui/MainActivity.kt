@@ -142,7 +142,11 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
      * Applies system-bar insets so the layout looks correct under edge-to-edge.
      *
      * Strategy:
-     *   - Toolbar / AppBar:        top inset
+     *   - AppBar:                  top inset as padding (wrap_content grows to
+     *                              status-bar height + 56dp; the Toolbar inside is
+     *                              fixed at ?attr/actionBarSize so padding it directly
+     *                              would CLIP the title — see issue: profile name
+     *                              hidden under status bar in 2.17.0)
      *   - Bottom panel container:  bottom inset as padding (lifts status row + quick
      *                              actions above the gesture-navigation pill)
      *   - FAB:                     bottom + IME insets added on top of its XML margin
@@ -156,7 +160,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private fun applyEdgeToEdgeInsets() {
         val fabBaseMargin = (binding.fab.layoutParams as android.view.ViewGroup.MarginLayoutParams).bottomMargin
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.appBar) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(top = bars.top)
             insets
