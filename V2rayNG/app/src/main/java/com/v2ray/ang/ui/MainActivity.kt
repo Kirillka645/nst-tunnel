@@ -9,14 +9,21 @@ import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayoutMediator
@@ -66,9 +73,23 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // installSplashScreen() must be called before super.onCreate() so the system
+        // splash transitions cleanly into MainActivity's content. It also re-applies
+        // the postSplashScreenTheme so we keep the M3 colours.
+        installSplashScreen()
+
+        // Edge-to-edge: window draws under the system bars; we apply insets to
+        // toolbar/FAB/navigation drawer manually below. SystemBarStyle.auto handles
+        // light/dark icon contrast based on the active theme.
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(0, 0),
+            navigationBarStyle = SystemBarStyle.auto(0, 0)
+        )
+
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         setupToolbar(binding.toolbar, false, getString(R.string.title_server))
+        applyEdgeToEdgeInsets()
 
         // setup viewpager and tablayout
         groupPagerAdapter = GroupPagerAdapter(this, emptyList())
@@ -113,6 +134,50 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         }
         mainViewModel.startListenBroadcast()
         mainViewModel.initAssets(assets)
+    }
+
+    /**
+     * Applies system-bar insets so the layout looks correct under edge-to-edge.
+     *
+     * Strategy:
+     *   - Toolbar / AppBar:        top inset
+     *   - FAB:                     bottom + IME insets (so it lifts above the keyboard)
+     *   - Bottom test-status bar:  bottom inset (uses padding instead of margin so its
+     *                              divider line still spans the full width)
+     *   - Navigation drawer body:  full system-bar insets
+     *
+     * Re-runs on every dispatch because Android may change insets when rotating, when
+     * the IME opens, or when the system gesture mode changes.
+     */
+    private fun applyEdgeToEdgeInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(top = bars.top)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.layoutTest) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(bottom = bars.bottom)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.fab) { view, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
+            )
+            view.updateLayoutParams<android.view.ViewGroup.MarginLayoutParams> {
+                bottomMargin =
+                    resources.getDimensionPixelSize(R.dimen.view_height_dp36) + bars.bottom
+            }
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(top = bars.top, bottom = bars.bottom)
+            insets
+        }
     }
 
     private fun setupGroupTab() {
@@ -183,19 +248,26 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
     private fun applyRunningState(isLoading: Boolean, isRunning: Boolean) {
         if (isLoading) {
+            // Connecting / handshake — amber FAB so the user sees something is happening.
             binding.fab.setImageResource(R.drawable.ic_fab_check)
+            binding.fab.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_connecting))
             return
         }
 
         if (isRunning) {
+            // Connected — brand orange + stop icon.
             binding.fab.setImageResource(R.drawable.ic_stop_24dp)
-            binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_active))
+            binding.fab.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_active))
             binding.fab.contentDescription = getString(R.string.action_stop_service)
             setTestState(getString(R.string.connection_connected))
             binding.layoutTest.isFocusable = true
         } else {
+            // Disconnected — neutral grey + play icon.
             binding.fab.setImageResource(R.drawable.ic_play_24dp)
-            binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_inactive))
+            binding.fab.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_inactive))
             binding.fab.contentDescription = getString(R.string.tasker_start_service)
             setTestState(getString(R.string.connection_not_connected))
             binding.layoutTest.isFocusable = false

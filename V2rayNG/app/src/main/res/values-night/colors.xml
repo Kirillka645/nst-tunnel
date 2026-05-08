@@ -1,52 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    NST Tunnel — Material 3 Dark theme palette.
+    Mirrors values/colors.xml with proper M3 dark tonal mapping.
+    Surfaces use a deep warm dark base (not pure black) for OLED-friendly look without crushing detail.
+-->
 <resources>
-    <color name="color_fab_active">#f97910</color>
-    <color name="color_fab_inactive">#646464</color>
-    <color name="divider_color_light">#424242</color>
+    <!-- Legacy aliases -->
+    <color name="colorPing">#65DEAA</color>
+    <color name="colorPingRed">#FFB1C1</color>
+    <color name="colorConfigType">#FF9A4D</color>
+    <color name="colorWhite">#FFFFFF</color>
 
-    <!-- Primary colors - main tone: gray -->
-    <color name="md_theme_primary">#C0C0C0</color>
-    <color name="md_theme_onPrimary">#303030</color>
-    <color name="md_theme_primaryContainer">#474747</color>
-    <color name="md_theme_onPrimaryContainer">#E0E0E0</color>
+    <!-- FAB / connection-state colors -->
+    <color name="color_fab_active">#FF9A4D</color>
+    <color name="color_fab_inactive">#7A7770</color>
+    <color name="color_fab_connecting">#FFD960</color>
+    <color name="divider_color_light">#3A3730</color>
 
-    <!-- Secondary colors - accent color: orange -->
-    <color name="md_theme_secondary">#FFB687</color>
-    <color name="md_theme_onSecondary">#4E2600</color>
-    <color name="md_theme_secondaryContainer">#6F3800</color>
-    <color name="md_theme_onSecondaryContainer">#FFE8D6</color>
+    <!-- ============================================================ -->
+    <!--   PRIMARY (light warm-neutral on dark)                        -->
+    <!-- ============================================================ -->
+    <color name="md_theme_primary">#ECE7E1</color>
+    <color name="md_theme_onPrimary">#312E27</color>
+    <color name="md_theme_primaryContainer">#48433C</color>
+    <color name="md_theme_onPrimaryContainer">#F2EBE0</color>
+    <color name="md_theme_inversePrimary">#1F1B16</color>
 
-    <!-- Tertiary colors - tertiary color: green -->
-    <color name="md_theme_tertiary">#83D6B5</color>
-    <color name="md_theme_onTertiary">#00382E</color>
-    <color name="md_theme_tertiaryContainer">#005143</color>
-    <color name="md_theme_onTertiaryContainer">#A0F2D0</color>
+    <!-- ============================================================ -->
+    <!--   SECONDARY (bright orange — visible on dark surfaces)        -->
+    <!-- ============================================================ -->
+    <color name="md_theme_secondary">#FF9A4D</color>
+    <color name="md_theme_onSecondary">#4A2400</color>
+    <color name="md_theme_secondaryContainer">#6B3700</color>
+    <color name="md_theme_onSecondaryContainer">#FFDDB3</color>
 
-    <!-- Error colors -->
+    <!-- ============================================================ -->
+    <!--   TERTIARY (bright teal-green for "connected")                -->
+    <!-- ============================================================ -->
+    <color name="md_theme_tertiary">#5BDBAE</color>
+    <color name="md_theme_onTertiary">#003828</color>
+    <color name="md_theme_tertiaryContainer">#00513B</color>
+    <color name="md_theme_onTertiaryContainer">#79F8C9</color>
+
+    <!-- ============================================================ -->
+    <!--   ERROR                                                       -->
+    <!-- ============================================================ -->
     <color name="md_theme_error">#FFB4AB</color>
-    <color name="md_theme_errorContainer">#93000A</color>
     <color name="md_theme_onError">#690005</color>
+    <color name="md_theme_errorContainer">#93000A</color>
     <color name="md_theme_onErrorContainer">#FFDAD6</color>
 
-    <!-- Background colors -->
-    <color name="md_theme_background">#1C1B1F</color>
-    <color name="md_theme_onBackground">#E6E1E5</color>
+    <!-- ============================================================ -->
+    <!--   BACKGROUND                                                  -->
+    <!-- ============================================================ -->
+    <color name="md_theme_background">#15140F</color>
+    <color name="md_theme_onBackground">#E8E2DA</color>
 
-    <!-- Surface colors -->
-    <color name="md_theme_surface">#1C1B1F</color>
-    <color name="md_theme_onSurface">#E6E1E5</color>
-    <color name="md_theme_surfaceVariant">#49454F</color>
-    <color name="md_theme_onSurfaceVariant">#CAC4D0</color>
-    <color name="md_theme_inverseSurface">#E6E1E5</color>
-    <color name="md_theme_inverseOnSurface">#1C1B1F</color>
+    <!-- ============================================================ -->
+    <!--   SURFACE + 5-level elevation containers                      -->
+    <!-- ============================================================ -->
+    <color name="md_theme_surface">#15140F</color>
+    <color name="md_theme_onSurface">#E8E2DA</color>
+    <color name="md_theme_surfaceVariant">#4D4639</color>
+    <color name="md_theme_onSurfaceVariant">#D0C7B6</color>
+    <color name="md_theme_surfaceTint">#ECE7E1</color>
+    <color name="md_theme_inverseSurface">#E8E2DA</color>
+    <color name="md_theme_inverseOnSurface">#34302A</color>
 
-    <!-- Outline colors -->
-    <color name="md_theme_outline">#938F99</color>
-    <color name="md_theme_outlineVariant">#49454F</color>
+    <color name="md_theme_surfaceContainerLowest">#100F0A</color>
+    <color name="md_theme_surfaceContainerLow">#1D1C16</color>
+    <color name="md_theme_surfaceContainer">#21201A</color>
+    <color name="md_theme_surfaceContainerHigh">#2C2A24</color>
+    <color name="md_theme_surfaceContainerHighest">#37362F</color>
 
-    <!-- Other colors -->
-    <color name="md_theme_inversePrimary">#000000</color>
+    <!-- ============================================================ -->
+    <!--   OUTLINE                                                     -->
+    <!-- ============================================================ -->
+    <color name="md_theme_outline">#999182</color>
+    <color name="md_theme_outlineVariant">#4D4639</color>
+
+    <!-- ============================================================ -->
+    <!--   System bars                                                 -->
+    <!-- ============================================================ -->
     <color name="md_theme_shadow">#000000</color>
-    <color name="md_theme_surfaceTint">#C0C0C0</color>
     <color name="md_theme_scrim">#000000</color>
 </resources>
