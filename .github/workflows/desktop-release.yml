@@ -1,0 +1,128 @@
+name: Build desktop artifacts and attach to release
+
+# Builds the Flutter Desktop client on Windows and macOS runners, packages the
+# output into platform-appropriate archives, and uploads them as assets of an
+# existing GitHub Release.
+#
+# Trigger manually from the "Actions" tab (workflow_dispatch) and pass the tag
+# of the release you want to attach to — e.g. `v2.17-nst`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag to attach the desktop builds to (e.g. v2.17-nst)"
+        required: true
+        default: "v2.17-nst"
+
+permissions:
+  contents: write  # required to upload release assets
+
+jobs:
+  # ---------------------------------------------------------------------------
+  #                                WINDOWS
+  # ---------------------------------------------------------------------------
+  windows:
+    name: Build Windows x64 (.zip)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout tag ${{ inputs.release_tag }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
+
+      - name: Setup Flutter (stable)
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Enable Windows desktop support
+        run: flutter config --enable-windows-desktop
+
+      - name: Install dependencies
+        working-directory: desktop
+        run: flutter pub get
+
+      - name: Build Windows release
+        working-directory: desktop
+        run: flutter build windows --release
+
+      - name: Package release folder as .zip
+        shell: pwsh
+        working-directory: desktop/build/windows/x64/runner
+        run: |
+          $zipName = "NSTTunnel-2.17-windows-x64.zip"
+          Compress-Archive -Path Release\* -DestinationPath ..\..\..\..\..\$zipName -Force
+          Get-ChildItem ..\..\..\..\..\$zipName | Format-List Length, FullName
+
+      - name: Upload .zip to release ${{ inputs.release_tag }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: NSTTunnel-2.17-windows-x64.zip
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ---------------------------------------------------------------------------
+  #                                 macOS
+  # ---------------------------------------------------------------------------
+  macos:
+    name: Build macOS (.dmg)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout tag ${{ inputs.release_tag }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
+
+      - name: Setup Flutter (stable)
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Enable macOS desktop support
+        run: flutter config --enable-macos-desktop
+
+      - name: Install dependencies
+        working-directory: desktop
+        run: flutter pub get
+
+      - name: Build macOS release
+        working-directory: desktop
+        # The .app bundle is NOT codesigned — users will need to remove the
+        # quarantine attribute on first launch (`xattr -cr /Applications/NSTTunnel.app`).
+        # Proper Apple Developer ID signing + notarisation is out of scope for v2.17;
+        # switching to a signed release just means adding the --identity flag here
+        # once a signing certificate is available.
+        run: flutter build macos --release
+
+      - name: Rename .app and create DMG
+        working-directory: desktop/build/macos/Build/Products/Release
+        run: |
+          # Rename the default bundle to the product name the user sees in Finder.
+          APP_ORIG=$(ls -d *.app | head -1)
+          mv "$APP_ORIG" "NSTTunnel.app"
+
+          # Stage the app + an Applications-folder symlink so drag-to-install works.
+          STAGE=$(mktemp -d)
+          cp -R NSTTunnel.app "$STAGE/"
+          ln -s /Applications "$STAGE/Applications"
+
+          DMG_PATH="$GITHUB_WORKSPACE/NSTTunnel-2.17-macos.dmg"
+          hdiutil create -volname "NSTTunnel 2.17" \
+                         -srcfolder "$STAGE" \
+                         -ov -format UDZO \
+                         "$DMG_PATH"
+          ls -lh "$DMG_PATH"
+
+      - name: Upload .dmg to release ${{ inputs.release_tag }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: NSTTunnel-2.17-macos.dmg
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
