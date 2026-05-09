@@ -323,6 +323,8 @@
     <string name="toast_server_not_found_in_group">Выбранный профиль не найден в текущей группе</string>
     <string name="toast_fragment_not_available">Фрагмент недоступен</string>
     <string name="title_locate_selected_config">Найти выбранный профиль</string>
+    <string name="action_expand_subscription">Показать список VPN</string>
+    <string name="action_collapse_subscription">Скрыть список VPN</string>
 
     <string name="tasker_start_service">Запуск службы</string>
     <string name="tasker_setting_confirm">Подтвердить</string>

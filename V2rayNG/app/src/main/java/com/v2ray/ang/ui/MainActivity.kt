@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
+import kotlin.math.roundToInt
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
@@ -199,12 +201,28 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 tab.text = it.remarks
                 tab.tag = it.id
             }
-        }.also { it.attach() }
+        }.also {
+            it.attach()
+            applyTabSpacing()
+        }
 
         val targetIndex = groups.indexOfFirst { it.id == mainViewModel.subscriptionId }.takeIf { it >= 0 } ?: (groups.size - 1)
         binding.viewPager.setCurrentItem(targetIndex, false)
 
         binding.tabGroup.isVisible = groups.size > 1
+    }
+
+    private fun applyTabSpacing() {
+        val tabStrip = binding.tabGroup.getChildAt(0) as? ViewGroup ?: return
+        val margin = (6 * resources.displayMetrics.density).roundToInt()
+        val minHeight = (42 * resources.displayMetrics.density).roundToInt()
+        for (i in 0 until tabStrip.childCount) {
+            val tabView = tabStrip.getChildAt(i)
+            val params = tabView.layoutParams as? ViewGroup.MarginLayoutParams ?: continue
+            params.setMargins(margin, margin, margin, margin)
+            tabView.layoutParams = params
+            tabView.minimumHeight = minHeight
+        }
     }
 
     private fun handleFabAction() {

@@ -325,6 +325,8 @@
     <string name="toast_server_not_found_in_group">Selected server not found in current group</string>
     <string name="toast_fragment_not_available">Unable to locate current view</string>
     <string name="title_locate_selected_config">Locate the selected config</string>
+    <string name="action_expand_subscription">Show VPN list</string>
+    <string name="action_collapse_subscription">Hide VPN list</string>
 
     <string name="tasker_start_service">Start Service</string>
     <string name="tasker_setting_confirm">Confirm</string>
