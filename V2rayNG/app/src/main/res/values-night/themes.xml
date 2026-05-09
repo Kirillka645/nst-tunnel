@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Night theme: inherit the shared AppThemeBase and only override night-specific items -->
+    <!--
+        Night override.
+        AppThemeBase already pulls dark colours from values-night/colors.xml automatically;
+        we only flip the system-bar icon contrast here so the bars stay readable on the dark surface.
+    -->
     <style name="AppThemeDayNight" parent="AppThemeBase">
-        <!-- Night mode specific overrides -->
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
     </style>
