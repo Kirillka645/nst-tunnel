@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_bg"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical">
+    android:layout_marginStart="@dimen/padding_spacing_dp4"
+    android:layout_marginTop="@dimen/padding_spacing_dp4"
+    android:layout_marginEnd="@dimen/padding_spacing_dp4"
+    android:layout_marginBottom="@dimen/padding_spacing_dp8"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/vpn_card_background"
+    app:cardCornerRadius="@dimen/card_corner_radius_dp18"
+    app:cardElevation="@dimen/card_elevation_dp2"
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
         android:id="@+id/info_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
         android:nextFocusRight="@+id/layout_share"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/padding_spacing_dp4"
-        android:paddingTop="@dimen/padding_spacing_dp8"
-        android:paddingEnd="@dimen/padding_spacing_dp4"
-        android:paddingBottom="@dimen/padding_spacing_dp8">
+        android:paddingStart="@dimen/padding_spacing_dp8"
+        android:paddingTop="@dimen/padding_spacing_dp12"
+        android:paddingEnd="@dimen/padding_spacing_dp8"
+        android:paddingBottom="@dimen/padding_spacing_dp12">
 
         <LinearLayout
             android:id="@+id/layout_indicator"
@@ -100,10 +107,33 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/actions_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/layout_expand"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:contentDescription="@string/action_expand_subscription"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding_spacing_dp8"
+                        android:visibility="gone"
+                        tools:visibility="visible">
+
+                        <ImageView
+                            android:id="@+id/iv_expand"
+                            android:layout_width="@dimen/image_size_dp24"
+                            android:layout_height="@dimen/image_size_dp24"
+                            app:srcCompat="@drawable/ic_arrow_drop_down" />
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/layout_share"
@@ -186,6 +216,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/details_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -220,4 +251,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -48,9 +48,18 @@
                         android:id="@+id/tab_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@color/md_theme_background"
+                        android:paddingStart="@dimen/padding_spacing_dp8"
+                        android:paddingEnd="@dimen/padding_spacing_dp8"
+                        app:tabBackground="@drawable/bg_vpn_tab"
                         app:tabIndicatorFullWidth="false"
+                        app:tabIndicatorHeight="0dp"
+                        app:tabMinWidth="@dimen/view_width_dp96"
                         app:tabMode="scrollable"
-                        app:tabTextAppearance="@style/TabLayoutTextStyle" />
+                        app:tabRippleColor="@color/tab_vpn_ripple"
+                        app:tabSelectedTextColor="@color/md_theme_onPrimary"
+                        app:tabTextAppearance="@style/TabLayoutTextStyle"
+                        app:tabTextColor="@color/md_theme_onSurfaceVariant" />
 
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/view_pager"
