@@ -60,10 +60,14 @@ class GroupServerFragment : BaseFragment<FragmentGroupServerBinding>(),
         adapter = MainRecyclerAdapter(mainViewModel, ActivityAdapterListener())
         adapter.setGroupedDisplay(subId.isEmpty())
         binding.recyclerView.setHasFixedSize(true)
-        if (MmkvManager.decodeSettingsBool(AppConfig.PREF_DOUBLE_COLUMN_DISPLAY, false)) {
-            binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.recyclerView.layoutManager = if (MmkvManager.decodeSettingsBool(AppConfig.PREF_DOUBLE_COLUMN_DISPLAY, false)) {
+            GridLayoutManager(requireContext(), 2).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int) = adapter.getSpanSize(position, spanCount)
+                }
+            }
         } else {
-            binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 1)
+            GridLayoutManager(requireContext(), 1)
         }
         binding.recyclerView.itemAnimator = null
         binding.recyclerView.adapter = adapter
