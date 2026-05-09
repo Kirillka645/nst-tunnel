@@ -63,6 +63,16 @@ class MainRecyclerAdapter(
 
     override fun getItemCount() = uiItems.size
 
+    fun getSpanSize(position: Int, spanCount: Int): Int {
+        return when (uiItems.getOrNull(position)) {
+            ServerListUiItem.Footer,
+            is ServerListUiItem.GroupHeader -> spanCount
+
+            is ServerListUiItem.Server,
+            null -> 1
+        }
+    }
+
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val item = uiItems[position]
         if (holder is MainViewHolder && item is ServerListUiItem.Server) {
