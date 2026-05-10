@@ -21,6 +21,9 @@ on:
 permissions:
   contents: write  # required to upload release assets
 
+env:
+  RELEASE_TAG: ${{ inputs.release_tag || 'v2.17.3-nst' }}
+
 jobs:
   # ---------------------------------------------------------------------------
   #                                WINDOWS
@@ -29,10 +32,10 @@ jobs:
     name: Build Windows x64 (.zip)
     runs-on: windows-latest
     steps:
-      - name: Checkout tag ${{ inputs.release_tag }}
+      - name: Checkout tag ${{ env.RELEASE_TAG }}
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.release_tag }}
+          ref: ${{ env.RELEASE_TAG }}
 
       - name: Setup Flutter (stable)
         uses: subosito/flutter-action@v2
@@ -56,7 +59,7 @@ jobs:
         shell: pwsh
         # Strips a leading "v" and a trailing "-nst" so e.g. v2.17.1-nst -> 2.17.1.
         run: |
-          $tag = "${{ inputs.release_tag }}"
+          $tag = "${{ env.RELEASE_TAG }}"
           $ver = $tag -replace '^v','' -replace '-nst$',''
           "version=$ver" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           Write-Host "version=$ver"
@@ -69,10 +72,10 @@ jobs:
           Compress-Archive -Path Release\* -DestinationPath ..\..\..\..\..\$zipName -Force
           Get-ChildItem ..\..\..\..\..\$zipName | Format-List Length, FullName
 
-      - name: Upload .zip to release ${{ inputs.release_tag }}
+      - name: Upload .zip to release ${{ env.RELEASE_TAG }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.release_tag }}
+          tag_name: ${{ env.RELEASE_TAG }}
           files: NSTTunnel-${{ steps.ver.outputs.version }}-windows-x64.zip
           fail_on_unmatched_files: true
         env:
@@ -85,10 +88,10 @@ jobs:
     name: Build macOS (.dmg)
     runs-on: macos-latest
     steps:
-      - name: Checkout tag ${{ inputs.release_tag }}
+      - name: Checkout tag ${{ env.RELEASE_TAG }}
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.release_tag }}
+          ref: ${{ env.RELEASE_TAG }}
 
       - name: Setup Flutter (stable)
         uses: subosito/flutter-action@v2
@@ -116,7 +119,7 @@ jobs:
         id: ver
         # Strips a leading "v" and a trailing "-nst" so e.g. v2.17.1-nst -> 2.17.1.
         run: |
-          tag="${{ inputs.release_tag }}"
+          tag="${{ env.RELEASE_TAG }}"
           ver="${tag#v}"
           ver="${ver%-nst}"
           echo "version=$ver" >> "$GITHUB_OUTPUT"
@@ -141,10 +144,10 @@ jobs:
                          "$DMG_PATH"
           ls -lh "$DMG_PATH"
 
-      - name: Upload .dmg to release ${{ inputs.release_tag }}
+      - name: Upload .dmg to release ${{ env.RELEASE_TAG }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.release_tag }}
+          tag_name: ${{ env.RELEASE_TAG }}
           files: NSTTunnel-${{ steps.ver.outputs.version }}-macos.dmg
           fail_on_unmatched_files: true
         env:
