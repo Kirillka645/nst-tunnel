@@ -7,7 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:nst_tunnel_desktop/data/parsers/uri_parser.dart';
 import 'package:nst_tunnel_desktop/data/profile.dart';
+import 'package:nst_tunnel_desktop/data/profile_repository.dart';
 import 'package:nst_tunnel_desktop/theme/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('AppTheme', () {
@@ -108,6 +110,28 @@ vless://75807638-6f19-07d0-ae08-38492ee85c88@178.72.182.20:52006?type=tcp&header
       expect(profiles, hasLength(1));
       expect(profiles.first.address, '1.2.3.4');
       expect(profiles.first.remarks, 'X');
+    });
+  });
+
+  group('ProfileRepository', () {
+    test('keeps each imported profile selectable with a unique id', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final repo = ProfileRepository(prefs);
+
+      final profiles = ShareUriParser.parseList('''
+vless://aaaa-bbbb-cccc-dddd@1.2.3.4:443?security=tls&type=tcp#A
+vless://eeee-ffff-gggg-hhhh@5.6.7.8:443?security=tls&type=tcp#B
+vless://iiii-jjjj-kkkk-llll@9.10.11.12:443?security=tls&type=tcp#C
+''');
+
+      for (final profile in profiles) {
+        await repo.add(profile);
+      }
+
+      expect(repo.profiles.map((p) => p.id).toSet(), hasLength(3));
+      await repo.setActive(repo.profiles[1].id);
+      expect(repo.active?.remarks, 'B');
     });
   });
 }

@@ -1,5 +1,9 @@
 import 'package:flutter/foundation.dart';
 
+int _nextGeneratedProfileId = 0;
+
+String _newProfileId() => '${DateTime.now().microsecondsSinceEpoch}-${_nextGeneratedProfileId++}';
+
 /// All Xray-supported outbound protocols this client knows how to launch.
 ///
 /// The values are the strings used in the Xray JSON config (`outbounds[].protocol`)
@@ -52,7 +56,7 @@ class Profile {
     this.spiderX,
     this.fingerprint,
     this.rawJson,
-  }) : id = id ?? DateTime.now().microsecondsSinceEpoch.toString();
+  }) : id = id ?? _newProfileId();
 
   final String id;
   final ProtocolType protocol;

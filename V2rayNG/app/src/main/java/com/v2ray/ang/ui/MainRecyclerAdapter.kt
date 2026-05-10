@@ -230,7 +230,11 @@ class MainRecyclerAdapter(
         val grouped = data.groupBy { it.profile.subscriptionId.orEmpty() }
         collapsedSubscriptionIds.retainAll(grouped.keys)
         val items = mutableListOf<ServerListUiItem>()
-        val sortedGroups = grouped.toSortedMap(compareBy<String> { id -> subscriptions[id] ?: id.ifBlank { "VPN" } })
+        val sortedGroups = grouped.entries.sortedWith(
+            compareBy<Map.Entry<String, List<ServersCache>>> { entry ->
+                subscriptions[entry.key] ?: entry.key.ifBlank { "VPN" }
+            }.thenBy { entry -> entry.key }
+        )
         sortedGroups.forEach { (subscriptionId, servers) ->
             val title = subscriptions[subscriptionId] ?: subscriptionId.ifBlank { "VPN" }
             val expanded = !collapsedSubscriptionIds.contains(subscriptionId)

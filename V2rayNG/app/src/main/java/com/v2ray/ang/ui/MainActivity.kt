@@ -5,11 +5,12 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.net.VpnService
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
-import kotlin.math.roundToInt
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
@@ -49,6 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
 
 class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val binding by lazy {
@@ -58,6 +60,12 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     val mainViewModel: MainViewModel by viewModels()
     private lateinit var groupPagerAdapter: GroupPagerAdapter
     private var tabMediator: TabLayoutMediator? = null
+    private val fabLoadingHandler = Handler(Looper.getMainLooper())
+    private val fabLoadingTimeout = Runnable {
+        if (mainViewModel.isRunning.value != true) {
+            applyRunningState(isLoading = false, isRunning = false)
+        }
+    }
 
     private val requestVpnPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == RESULT_OK) {
@@ -134,6 +142,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private fun setupViewModel() {
         mainViewModel.updateTestResultAction.observe(this) { setTestState(it) }
         mainViewModel.isRunning.observe(this) { isRunning ->
+            fabLoadingHandler.removeCallbacks(fabLoadingTimeout)
             applyRunningState(false, isRunning)
         }
         mainViewModel.startListenBroadcast()
@@ -226,9 +235,8 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private fun handleFabAction() {
-        applyRunningState(isLoading = true, isRunning = false)
-
         if (mainViewModel.isRunning.value == true) {
+            fabLoadingHandler.removeCallbacks(fabLoadingTimeout)
             CoreServiceManager.stopVService(this)
         } else if (SettingsManager.isVpnMode()) {
             val intent = VpnService.prepare(this)
@@ -263,9 +271,14 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
     private fun startV2Ray() {
         if (MmkvManager.getSelectServer().isNullOrEmpty()) {
+            fabLoadingHandler.removeCallbacks(fabLoadingTimeout)
+            applyRunningState(isLoading = false, isRunning = false)
             toast(R.string.title_file_chooser)
             return
         }
+        applyRunningState(isLoading = true, isRunning = false)
+        fabLoadingHandler.removeCallbacks(fabLoadingTimeout)
+        fabLoadingHandler.postDelayed(fabLoadingTimeout, 1500)
         CoreServiceManager.startVService(this)
     }
 
