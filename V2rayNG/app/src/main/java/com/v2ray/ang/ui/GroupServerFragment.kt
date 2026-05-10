@@ -58,13 +58,18 @@ class GroupServerFragment : BaseFragment<FragmentGroupServerBinding>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         adapter = MainRecyclerAdapter(mainViewModel, ActivityAdapterListener())
+        adapter.setGroupedDisplay(subId.isEmpty())
         binding.recyclerView.setHasFixedSize(true)
-        if (MmkvManager.decodeSettingsBool(AppConfig.PREF_DOUBLE_COLUMN_DISPLAY, false)) {
-            binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.recyclerView.layoutManager = if (MmkvManager.decodeSettingsBool(AppConfig.PREF_DOUBLE_COLUMN_DISPLAY, false)) {
+            GridLayoutManager(requireContext(), 2).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int) = adapter.getSpanSize(position, spanCount)
+                }
+            }
         } else {
-            binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 1)
+            GridLayoutManager(requireContext(), 1)
         }
-        addCustomDividerToRecyclerView(binding.recyclerView, R.drawable.custom_divider)
+        binding.recyclerView.itemAnimator = null
         binding.recyclerView.adapter = adapter
 
         itemTouchHelper = ItemTouchHelper(SimpleItemTouchHelperCallback(adapter, allowSwipe = false))
@@ -79,6 +84,7 @@ class GroupServerFragment : BaseFragment<FragmentGroupServerBinding>(),
             if (mainViewModel.subscriptionId != subId) {
                 return@observe
             }
+            adapter.setGroupedDisplay(subId.isEmpty())
             // LogUtil.d(TAG, "GroupServerFragment updateListAction subId=$subId")
             adapter.setData(mainViewModel.serversCache, index)
         }

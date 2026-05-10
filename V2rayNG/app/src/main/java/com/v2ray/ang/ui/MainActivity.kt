@@ -5,9 +5,12 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.net.VpnService
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
@@ -47,6 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
 
 class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val binding by lazy {
@@ -56,6 +60,12 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     val mainViewModel: MainViewModel by viewModels()
     private lateinit var groupPagerAdapter: GroupPagerAdapter
     private var tabMediator: TabLayoutMediator? = null
+    private val fabLoadingHandler = Handler(Looper.getMainLooper())
+    private val fabLoadingTimeout = Runnable {
+        if (mainViewModel.isRunning.value != true) {
+            applyRunningState(isLoading = false, isRunning = false)
+        }
+    }
 
     private val requestVpnPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == RESULT_OK) {
@@ -132,6 +142,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private fun setupViewModel() {
         mainViewModel.updateTestResultAction.observe(this) { setTestState(it) }
         mainViewModel.isRunning.observe(this) { isRunning ->
+            fabLoadingHandler.removeCallbacks(fabLoadingTimeout)
             applyRunningState(false, isRunning)
         }
         mainViewModel.startListenBroadcast()
@@ -199,7 +210,10 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 tab.text = it.remarks
                 tab.tag = it.id
             }
-        }.also { it.attach() }
+        }.also {
+            it.attach()
+            applyTabSpacing()
+        }
 
         val targetIndex = groups.indexOfFirst { it.id == mainViewModel.subscriptionId }.takeIf { it >= 0 } ?: (groups.size - 1)
         binding.viewPager.setCurrentItem(targetIndex, false)
@@ -207,10 +221,22 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         binding.tabGroup.isVisible = groups.size > 1
     }
 
-    private fun handleFabAction() {
-        applyRunningState(isLoading = true, isRunning = false)
+    private fun applyTabSpacing() {
+        val tabStrip = binding.tabGroup.getChildAt(0) as? ViewGroup ?: return
+        val margin = (6 * resources.displayMetrics.density).roundToInt()
+        val minHeight = (42 * resources.displayMetrics.density).roundToInt()
+        for (i in 0 until tabStrip.childCount) {
+            val tabView = tabStrip.getChildAt(i)
+            val params = tabView.layoutParams as? ViewGroup.MarginLayoutParams ?: continue
+            params.setMargins(margin, margin, margin, margin)
+            tabView.layoutParams = params
+            tabView.minimumHeight = minHeight
+        }
+    }
 
+    private fun handleFabAction() {
         if (mainViewModel.isRunning.value == true) {
+            fabLoadingHandler.removeCallbacks(fabLoadingTimeout)
             CoreServiceManager.stopVService(this)
         } else if (SettingsManager.isVpnMode()) {
             val intent = VpnService.prepare(this)
@@ -245,9 +271,14 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
     private fun startV2Ray() {
         if (MmkvManager.getSelectServer().isNullOrEmpty()) {
+            fabLoadingHandler.removeCallbacks(fabLoadingTimeout)
+            applyRunningState(isLoading = false, isRunning = false)
             toast(R.string.title_file_chooser)
             return
         }
+        applyRunningState(isLoading = true, isRunning = false)
+        fabLoadingHandler.removeCallbacks(fabLoadingTimeout)
+        fabLoadingHandler.postDelayed(fabLoadingTimeout, 1500)
         CoreServiceManager.startVService(this)
     }
 

@@ -10,6 +10,7 @@
     <color name="colorPingRed">#FFB1C1</color>
     <color name="colorConfigType">#FF9A4D</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="vpn_card_background">@color/md_theme_surfaceContainerLow</color>
 
     <!-- FAB / connection-state colors -->
     <color name="color_fab_active">#FF9A4D</color>

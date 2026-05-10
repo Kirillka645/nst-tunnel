@@ -16,6 +16,7 @@
     <color name="nst_surface">#FFFFFF</color>
     <color name="nst_surface_variant">#F1F5F9</color>
     <color name="nst_panel_stroke">#E2E8F0</color>
+    <color name="vpn_card_background">@color/md_theme_surfaceContainerLow</color>
 
     <!-- FAB / connection-state colors (used by service & adapters) -->
     <color name="color_fab_active">#E96A0A</color>

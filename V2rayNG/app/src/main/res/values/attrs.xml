@@ -3,5 +3,6 @@
 
     <style name="TabLayoutTextStyle" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>
