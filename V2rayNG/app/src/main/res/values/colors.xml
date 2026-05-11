@@ -1,57 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    NST Tunnel — Material 3 Light theme palette.
+    Design philosophy: warm monochrome surfaces + brand orange accent + success green for "connected" state.
+    Generated from seed #f97910 (brand orange) using Material 3 tonal palette principles.
+-->
 <resources>
-    <color name="colorPing">#009966</color>
-    <color name="colorPingRed">#FF0099</color>
-    <color name="colorConfigType">#f97910</color>
+    <!-- Legacy aliases kept for backward compatibility with existing layouts/code -->
+    <color name="colorPing">#1B8E5A</color>
+    <color name="colorPingRed">#C42B5C</color>
+    <color name="colorConfigType">#E96A0A</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="color_fab_active">#f97910</color>
-    <color name="color_fab_inactive">#9C9C9C</color>
-    <color name="divider_color_light">#E0E0E0</color>
     <color name="colorIndicator">@color/md_theme_primary</color>
 
-    <!-- Primary colors - main tone: black -->
-    <color name="md_theme_primary">#000000</color>
+    <!-- FAB / connection-state colors (used by service & adapters) -->
+    <color name="color_fab_active">#E96A0A</color>
+    <color name="color_fab_inactive">#9E9A93</color>
+    <color name="color_fab_connecting">#F4B400</color>
+    <color name="divider_color_light">#E5E0DA</color>
+
+    <!-- ============================================================ -->
+    <!--   Material 3 PRIMARY palette (warm-neutral / near-black)      -->
+    <!-- ============================================================ -->
+    <color name="md_theme_primary">#1F1B16</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>
-    <color name="md_theme_primaryContainer">#E0E0E0</color>
-    <color name="md_theme_onPrimaryContainer">#000000</color>
+    <color name="md_theme_primaryContainer">#F2EBE0</color>
+    <color name="md_theme_onPrimaryContainer">#2A241B</color>
+    <color name="md_theme_inversePrimary">#E8E1D5</color>
 
-    <!-- Secondary colors - accent color: orange -->
-    <color name="md_theme_secondary">#f97910</color>
+    <!-- ============================================================ -->
+    <!--   SECONDARY palette (brand orange)                            -->
+    <!-- ============================================================ -->
+    <color name="md_theme_secondary">#B85B0E</color>
     <color name="md_theme_onSecondary">#FFFFFF</color>
-    <color name="md_theme_secondaryContainer">#FFE8D6</color>
-    <color name="md_theme_onSecondaryContainer">#2B1700</color>
+    <color name="md_theme_secondaryContainer">#FFDDB3</color>
+    <color name="md_theme_onSecondaryContainer">#2C1700</color>
 
-    <!-- Tertiary colors - accent color: green -->
-    <color name="md_theme_tertiary">#009966</color>
+    <!-- ============================================================ -->
+    <!--   TERTIARY palette (deep teal-green = "connected")            -->
+    <!-- ============================================================ -->
+    <color name="md_theme_tertiary">#006D52</color>
     <color name="md_theme_onTertiary">#FFFFFF</color>
-    <color name="md_theme_tertiaryContainer">#A0F2D0</color>
-    <color name="md_theme_onTertiaryContainer">#00201A</color>
+    <color name="md_theme_tertiaryContainer">#79F8C9</color>
+    <color name="md_theme_onTertiaryContainer">#002117</color>
 
-    <!-- Error colors -->
+    <!-- ============================================================ -->
+    <!--   ERROR palette                                               -->
+    <!-- ============================================================ -->
     <color name="md_theme_error">#BA1A1A</color>
-    <color name="md_theme_errorContainer">#FFDAD6</color>
     <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_errorContainer">#FFDAD6</color>
     <color name="md_theme_onErrorContainer">#410002</color>
 
-    <!-- Background colors -->
-    <color name="md_theme_background">#FFFFFF</color>
-    <color name="md_theme_onBackground">#1C1B1F</color>
+    <!-- ============================================================ -->
+    <!--   BACKGROUND                                                  -->
+    <!-- ============================================================ -->
+    <color name="md_theme_background">#FFFBF5</color>
+    <color name="md_theme_onBackground">#1F1B16</color>
 
-    <!-- Surface colors -->
-    <color name="md_theme_surface">#FFFFFF</color>
-    <color name="md_theme_onSurface">#1C1B1F</color>
-    <color name="md_theme_surfaceVariant">#E7E0EC</color>
-    <color name="md_theme_onSurfaceVariant">#49454F</color>
-    <color name="md_theme_inverseSurface">#313033</color>
-    <color name="md_theme_inverseOnSurface">#F4EFF4</color>
+    <!-- ============================================================ -->
+    <!--   SURFACE + 5-level elevation containers (M3)                 -->
+    <!-- ============================================================ -->
+    <color name="md_theme_surface">#FFFBF5</color>
+    <color name="md_theme_onSurface">#1F1B16</color>
+    <color name="md_theme_surfaceVariant">#EDE1CF</color>
+    <color name="md_theme_onSurfaceVariant">#4D4639</color>
+    <color name="md_theme_surfaceTint">#1F1B16</color>
+    <color name="md_theme_inverseSurface">#34302A</color>
+    <color name="md_theme_inverseOnSurface">#F8EFE2</color>
 
-    <!-- Outline colors -->
-    <color name="md_theme_outline">#79747E</color>
-    <color name="md_theme_outlineVariant">#CAC4D0</color>
+    <color name="md_theme_surfaceContainerLowest">#FFFFFF</color>
+    <color name="md_theme_surfaceContainerLow">#FAF4EC</color>
+    <color name="md_theme_surfaceContainer">#F5EFE5</color>
+    <color name="md_theme_surfaceContainerHigh">#EFE9DF</color>
+    <color name="md_theme_surfaceContainerHighest">#E9E3D9</color>
 
-    <!-- Other colors -->
-    <color name="md_theme_inversePrimary">#C0C0C0</color>
+    <!-- ============================================================ -->
+    <!--   OUTLINE                                                     -->
+    <!-- ============================================================ -->
+    <color name="md_theme_outline">#7F7768</color>
+    <color name="md_theme_outlineVariant">#D0C7B6</color>
+
+    <!-- ============================================================ -->
+    <!--   System bars                                                 -->
+    <!-- ============================================================ -->
     <color name="md_theme_shadow">#000000</color>
-    <color name="md_theme_surfaceTint">#000000</color>
     <color name="md_theme_scrim">#000000</color>
 </resources>

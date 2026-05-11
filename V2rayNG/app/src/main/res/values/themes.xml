@@ -1,68 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Common base theme: put all shared items here so day/night can reuse -->
+    <!--
+        AppThemeBase
+        Base Material 3 theme. All shared color attributes live here so light/dark
+        variants stay tiny and only override what actually changes (system bar icon tint, etc).
+    -->
     <style name="AppThemeBase" parent="Theme.Material3.DayNight">
-        <!-- Primary colors - main tone: black -->
+        <!-- Primary -->
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+        <item name="colorPrimaryInverse">@color/md_theme_inversePrimary</item>
 
-        <!-- Secondary colors - accent color: orange -->
+        <!-- Secondary (brand orange) -->
         <item name="colorSecondary">@color/md_theme_secondary</item>
         <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
         <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
         <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
 
-        <!-- Tertiary colors - tertiary color: green -->
+        <!-- Tertiary (success green) -->
         <item name="colorTertiary">@color/md_theme_tertiary</item>
         <item name="colorOnTertiary">@color/md_theme_onTertiary</item>
         <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
         <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
 
-        <!-- Error colors -->
+        <!-- Error -->
         <item name="colorError">@color/md_theme_error</item>
         <item name="colorOnError">@color/md_theme_onError</item>
         <item name="colorErrorContainer">@color/md_theme_errorContainer</item>
         <item name="colorOnErrorContainer">@color/md_theme_onErrorContainer</item>
 
-        <!-- Surface colors -->
+        <!-- Surface (proper M3 elevation containers, 5 levels) -->
         <item name="colorSurface">@color/md_theme_surface</item>
         <item name="colorOnSurface">@color/md_theme_onSurface</item>
         <item name="colorSurfaceVariant">@color/md_theme_surfaceVariant</item>
         <item name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</item>
         <item name="colorSurfaceInverse">@color/md_theme_inverseSurface</item>
         <item name="colorOnSurfaceInverse">@color/md_theme_inverseOnSurface</item>
-        <item name="colorSurfaceContainer">@color/md_theme_surface</item>
-        <item name="colorSurfaceContainerHigh">@color/md_theme_surface</item>
-        <item name="colorSurfaceContainerHighest">@color/md_theme_surface</item>
-        <item name="colorSurfaceContainerLow">@color/md_theme_surface</item>
-        <item name="colorSurfaceContainerLowest">@color/md_theme_surface</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
 
-        <!-- Background colors -->
+        <!-- Background -->
         <item name="android:colorBackground">@color/md_theme_background</item>
         <item name="colorOnBackground">@color/md_theme_onBackground</item>
 
-        <!-- Outline colors -->
+        <!-- Outline -->
         <item name="colorOutline">@color/md_theme_outline</item>
         <item name="colorOutlineVariant">@color/md_theme_outlineVariant</item>
 
-        <!-- Other colors -->
-        <item name="colorPrimaryInverse">@color/md_theme_inversePrimary</item>
+        <!--
+            Edge-to-edge: transparent system bars; icon contrast is set per day/night.
+            Activity must call WindowCompat.setDecorFitsSystemWindows(window, false).
+        -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="29">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
 
-        <!-- Status bar and navigation bar - system bars -->
-        <item name="android:statusBarColor">@color/md_theme_surface</item>
-        <item name="android:navigationBarColor">@color/md_theme_surface</item>
+        <!-- Smoother activity transitions -->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowContentTransitions">true</item>
+
+        <!-- Component overrides -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.NSTTunnel.Dialog</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.NSTTunnel.BottomSheet</item>
     </style>
 
-    <!-- Day/Night theme: inherit common values and set light-mode-specific items -->
+    <!--
+        Day/Night base — everyone inherits from this.
+        Light mode = dark icons on system bars.
+    -->
     <style name="AppThemeDayNight" parent="AppThemeBase">
-        <!-- day/night-specific overrides (light/default) -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>
 
-    <!-- Theme without ActionBar -->
+    <!-- ActionBar-less variant used by every Activity in the app -->
     <style name="AppThemeDayNight.NoActionBar" parent="AppThemeDayNight">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -74,8 +93,43 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
+    <!--
+        Splash screen theme (Android 12+ SplashScreen API).
+        On API 23–30 the support library shim renders an equivalent splash.
+        windowSplashScreenBackground uses the surface color so the splash blends with the app.
+    -->
+    <style name="Theme.NSTTunnel.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/md_theme_surface</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="postSplashScreenTheme">@style/AppThemeDayNight.NoActionBar</item>
+    </style>
+
+    <!-- Material 3 dialog overlay -->
+    <style name="ThemeOverlay.NSTTunnel.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorSurface">@color/md_theme_surfaceContainerHigh</item>
+        <item name="dialogCornerRadius">28dp</item>
+    </style>
+
+    <!-- Material 3 bottom sheet overlay -->
+    <style name="ThemeOverlay.NSTTunnel.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.NSTTunnel.BottomSheet</item>
+    </style>
+
+    <style name="Widget.NSTTunnel.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@color/md_theme_surfaceContainerLow</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.NSTTunnel.LargeComponent</item>
+    </style>
+
+    <style name="ShapeAppearance.NSTTunnel.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSize">28dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <!-- Branded switch (kept for backward compatibility with existing prefs) -->
     <style name="BrandedSwitch" parent="AppThemeDayNight">
-        <item name="colorPrimary">@color/color_fab_active</item>
+        <item name="colorPrimary">?attr/colorSecondary</item>
     </style>
 
 </resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 12+ overrides.
+
+    On Android 12+ we lean on the system "Dynamic Colors" engine to extract a tonal palette
+    from the user's wallpaper. Two things matter here:
+
+      1.  The actual recolouring is done from code via DynamicColors.applyToActivitiesIfAvailable()
+          (see AngApplication.onCreate). The base AppThemeBase already exposes the M3 attributes
+          DynamicColors needs — we don't duplicate them.
+
+      2.  We override only the splash screen so its accent picks up the wallpaper colour too,
+          giving the launch a proper Material You feel.
+-->
+<resources>
+
+    <style name="Theme.NSTTunnel.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">?android:attr/colorBackground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="windowSplashScreenIconBackgroundColor">?android:attr/colorBackground</item>
+        <item name="windowSplashScreenAnimationDuration">400</item>
+        <item name="postSplashScreenTheme">@style/AppThemeDayNight.NoActionBar</item>
+    </style>
+
+</resources>
