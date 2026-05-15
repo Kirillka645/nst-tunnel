@@ -8,6 +8,11 @@
     <color name="color_fab_inactive">#9C9C9C</color>
     <color name="divider_color_light">#E0E0E0</color>
     <color name="colorIndicator">@color/md_theme_primary</color>
+    <color name="nst_background_start">#F8FAFC</color>
+    <color name="nst_background_end">#EEF7F2</color>
+    <color name="nst_surface">#FFFFFF</color>
+    <color name="nst_surface_variant">#F1F5F9</color>
+    <color name="nst_panel_stroke">#E2E8F0</color>
 
     <!-- Primary colors - main tone: black -->
     <color name="md_theme_primary">#000000</color>
