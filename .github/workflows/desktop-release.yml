@@ -27,7 +27,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout tag ${{ inputs.release_tag }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.release_tag }}
 
@@ -83,7 +83,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout tag ${{ inputs.release_tag }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.release_tag }}
 
