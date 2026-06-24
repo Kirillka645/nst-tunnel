@@ -40,6 +40,10 @@ jobs:
       - name: Enable Windows desktop support
         run: flutter config --enable-windows-desktop
 
+      - name: Generate platform folders
+        working-directory: desktop
+        run: flutter create --platforms=windows,macos --org com.nsttunnel --project-name nst_tunnel .
+
       - name: Install dependencies
         working-directory: desktop
         run: flutter pub get
@@ -95,6 +99,10 @@ jobs:
 
       - name: Enable macOS desktop support
         run: flutter config --enable-macos-desktop
+
+      - name: Generate platform folders
+        working-directory: desktop
+        run: flutter create --platforms=windows,macos --org com.nsttunnel --project-name nst_tunnel .
 
       - name: Install dependencies
         working-directory: desktop
