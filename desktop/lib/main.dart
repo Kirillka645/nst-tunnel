@@ -31,11 +31,11 @@ class ProxyConfig {
 String _flagFor(String s) {
   final t = s.toLowerCase();
   const map = {
-    '🇳🇱': ['nether','amsterdam','🇳🇱'], '🇩🇪': ['german','frankfurt','🇩🇪'],
+    '🇳🇱': ['nether','amsterdam','nl','🇳🇱'], '🇩🇪': ['german','frankfurt','🇩🇪'],
     '🇺🇸': ['usa','united states','🇺🇸'], '🇬🇧': ['london','🇬🇧'],
     '🇫🇷': ['france','paris','🇫🇷'], '🇯🇵': ['japan','tokyo','🇯🇵'],
     '🇸🇬': ['singapore','🇸🇬'], '🇷🇺': ['russia','moscow','🇷🇺'],
-    '🇫🇮': ['finland','🇫🇮'], '🇸🇪': ['sweden','🇸🇪'], '🇳🇱':['nl'],
+    '🇫🇮': ['finland','🇫🇮'], '🇸🇪': ['sweden','🇸🇪'],
     '🇹🇷': ['turkey','istanbul','🇹🇷'], '🇦🇪': ['emirat','dubai','🇦🇪'],
   };
   for (final e in map.entries) { for (final k in e.value) { if (t.contains(k)) return e.key; } }
