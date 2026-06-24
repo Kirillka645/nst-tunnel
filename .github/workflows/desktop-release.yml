@@ -1,27 +1,20 @@
 name: Build desktop artifacts and attach to release
 
-# Builds the Flutter Desktop client on Windows and macOS runners, packages the
-# output into platform-appropriate archives, and uploads them as assets of an
-# existing GitHub Release.
-#
-# Trigger manually from the "Actions" tab (workflow_dispatch) and pass the tag
-# of the release you want to attach to — e.g. `v2.17-nst`.
-
 on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release tag to attach the desktop builds to (e.g. v2.17-nst)"
+        description: "Release tag to attach the desktop builds to (e.g. v2.18.0-nst)"
         required: true
-        default: "v2.17-nst"
+        default: "v2.18.0-nst"
 
 permissions:
-  contents: write  # required to upload release assets
+  contents: write
+
+env:
+  XRAY_VERSION: "v1.8.23"
 
 jobs:
-  # ---------------------------------------------------------------------------
-  #                                WINDOWS
-  # ---------------------------------------------------------------------------
   windows:
     name: Build Windows x64 (.zip)
     runs-on: windows-latest
@@ -30,38 +23,41 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: ${{ inputs.release_tag }}
-
       - name: Setup Flutter (stable)
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
-
       - name: Enable Windows desktop support
         run: flutter config --enable-windows-desktop
-
       - name: Generate platform folders
         working-directory: desktop
         run: flutter create --platforms=windows,macos --org com.nsttunnel --project-name nst_tunnel .
-
       - name: Install dependencies
         working-directory: desktop
         run: flutter pub get
-
       - name: Build Windows release
         working-directory: desktop
         run: flutter build windows --release
-
+      - name: Download Xray-core (Windows)
+        shell: pwsh
+        run: |
+          $url = "https://github.com/XTLS/Xray-core/releases/download/$env:XRAY_VERSION/Xray-windows-64.zip"
+          Write-Host "Downloading $url"
+          Invoke-WebRequest -Uri $url -OutFile xray.zip
+          Expand-Archive -Path xray.zip -DestinationPath xray_tmp -Force
+          Copy-Item xray_tmp\xray.exe "desktop\build\windows\x64\runner\Release\xray.exe" -Force
+          if (Test-Path "xray_tmp\geoip.dat") { Copy-Item xray_tmp\geoip.dat "desktop\build\windows\x64\runner\Release\" -Force }
+          if (Test-Path "xray_tmp\geosite.dat") { Copy-Item xray_tmp\geosite.dat "desktop\build\windows\x64\runner\Release\" -Force }
+          Get-ChildItem "desktop\build\windows\x64\runner\Release\xray.exe" | Format-List Length, FullName
       - name: Derive version label from tag
         id: ver
         shell: pwsh
-        # Strips a leading "v" and a trailing "-nst" so e.g. v2.17.1-nst -> 2.17.1.
         run: |
           $tag = "${{ inputs.release_tag }}"
           $ver = $tag -replace '^v','' -replace '-nst$',''
           "version=$ver" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           Write-Host "version=$ver"
-
       - name: Package release folder as .zip
         shell: pwsh
         working-directory: desktop/build/windows/x64/runner
@@ -69,8 +65,7 @@ jobs:
           $zipName = "NSTTunnel-${{ steps.ver.outputs.version }}-windows-x64.zip"
           Compress-Archive -Path Release\* -DestinationPath ..\..\..\..\..\$zipName -Force
           Get-ChildItem ..\..\..\..\..\$zipName | Format-List Length, FullName
-
-      - name: Upload .zip to release ${{ inputs.release_tag }}
+      - name: Upload .zip to release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_tag }}
@@ -79,9 +74,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # ---------------------------------------------------------------------------
-  #                                 macOS
-  # ---------------------------------------------------------------------------
   macos:
     name: Build macOS (.dmg)
     runs-on: macos-latest
@@ -90,63 +82,55 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: ${{ inputs.release_tag }}
-
       - name: Setup Flutter (stable)
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
-
       - name: Enable macOS desktop support
         run: flutter config --enable-macos-desktop
-
       - name: Generate platform folders
         working-directory: desktop
         run: flutter create --platforms=windows,macos --org com.nsttunnel --project-name nst_tunnel .
-
       - name: Install dependencies
         working-directory: desktop
         run: flutter pub get
-
       - name: Build macOS release
         working-directory: desktop
-        # The .app bundle is NOT codesigned — users will need to remove the
-        # quarantine attribute on first launch (`xattr -cr /Applications/NSTTunnel.app`).
-        # Proper Apple Developer ID signing + notarisation is out of scope for v2.17;
-        # switching to a signed release just means adding the --identity flag here
-        # once a signing certificate is available.
         run: flutter build macos --release
-
       - name: Derive version label from tag
         id: ver
-        # Strips a leading "v" and a trailing "-nst" so e.g. v2.17.1-nst -> 2.17.1.
         run: |
           tag="${{ inputs.release_tag }}"
           ver="${tag#v}"
           ver="${ver%-nst}"
           echo "version=$ver" >> "$GITHUB_OUTPUT"
           echo "version=$ver"
-
-      - name: Rename .app and create DMG
+      - name: Download Xray-core (macOS) and bundle, then create DMG
         working-directory: desktop/build/macos/Build/Products/Release
         run: |
-          # Rename the default bundle to the product name the user sees in Finder.
+          set -e
+          ARCH_ASSET="Xray-macos-arm64-v8a.zip"
+          if [ "$(uname -m)" = "x86_64" ]; then ARCH_ASSET="Xray-macos-64.zip"; fi
+          echo "Downloading $ARCH_ASSET"
+          curl -L -o xray.zip "https://github.com/XTLS/Xray-core/releases/download/$XRAY_VERSION/$ARCH_ASSET"
+          unzip -o xray.zip -d xray_tmp
+
           APP_ORIG=$(ls -d *.app | head -1)
           mv "$APP_ORIG" "NSTTunnel.app"
+          mkdir -p "NSTTunnel.app/Contents/Resources"
+          cp xray_tmp/xray "NSTTunnel.app/Contents/Resources/xray"
+          chmod +x "NSTTunnel.app/Contents/Resources/xray"
+          [ -f xray_tmp/geoip.dat ] && cp xray_tmp/geoip.dat "NSTTunnel.app/Contents/Resources/" || true
+          [ -f xray_tmp/geosite.dat ] && cp xray_tmp/geosite.dat "NSTTunnel.app/Contents/Resources/" || true
 
-          # Stage the app + an Applications-folder symlink so drag-to-install works.
           STAGE=$(mktemp -d)
           cp -R NSTTunnel.app "$STAGE/"
           ln -s /Applications "$STAGE/Applications"
-
           DMG_PATH="$GITHUB_WORKSPACE/NSTTunnel-${{ steps.ver.outputs.version }}-macos.dmg"
-          hdiutil create -volname "NSTTunnel ${{ steps.ver.outputs.version }}" \
-                         -srcfolder "$STAGE" \
-                         -ov -format UDZO \
-                         "$DMG_PATH"
+          hdiutil create -volname "NSTTunnel ${{ steps.ver.outputs.version }}" -srcfolder "$STAGE" -ov -format UDZO "$DMG_PATH"
           ls -lh "$DMG_PATH"
-
-      - name: Upload .dmg to release ${{ inputs.release_tag }}
+      - name: Upload .dmg to release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_tag }}
