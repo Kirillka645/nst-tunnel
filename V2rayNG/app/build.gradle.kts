@@ -12,8 +12,8 @@ android {
         applicationId = "com.nstkir.nsttunnel"
         minSdk = 24
         targetSdk = 36
-        versionCode = 727
-        versionName = "2.18.0"
+        versionCode = 728
+        versionName = "2.19.0"
         multiDexEnabled = true
 
         val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
