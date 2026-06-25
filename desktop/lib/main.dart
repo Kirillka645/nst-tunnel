@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'xray_engine.dart';
+import 'singbox_engine.dart';
 import 'subscription.dart';
 
 void main() => runApp(const NstTunnelApp());
