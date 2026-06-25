@@ -98,6 +98,10 @@ class ConfigParser {
       if (link.startsWith('vless://')) return _generic(link, 'vless', group);
       if (link.startsWith('trojan://')) return _generic(link, 'trojan', group);
       if (link.startsWith('ss://')) return _ss(link, group);
+      if (link.startsWith('hysteria2://')) return _generic(link, 'hysteria2', group);
+      if (link.startsWith('hy2://')) return _generic(link, 'hysteria2', group);
+      if (link.startsWith('hysteria://')) return _generic(link, 'hysteria', group);
+      if (link.startsWith('tuic://')) return _generic(link, 'tuic', group);
     } catch (_) {}
     return null;
   }
@@ -254,39 +258,117 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   @override
+  void _openAdd() => showDialog(context: context, builder: (_) => AddDialog(onAdd: _addConfigs));
+
   Widget build(BuildContext context) {
     if (_loading) return const Scaffold(body: Center(child: CircularProgressIndicator(color: kBrand)));
+    Widget body;
+    switch (_rail) {
+      case 1:
+        body = StatsPane(server: _selected, state: _conn, mode: _mode, total: _configs.length, groups: _subs.length);
+        break;
+      case 2:
+        body = SettingsPane(mode: _mode, onMode: (md) => setState(() => _mode = md));
+        break;
+      case 3:
+        body = const AboutPane();
+        break;
+      default:
+        body = Row(children: [
+          Expanded(child: ServersPane(
+            configs: _configs, query: _query, selected: _selected, subs: _subs,
+            onQuery: (q) => setState(() => _query = q),
+            onSelect: _select, onRemove: _remove, onRemoveGroup: _removeGroup, onPin: _togglePin,
+            onAdd: _addConfigs, onPingAll: _pingAll, onPingGroup: _pingGroup, onPingOne: _pingOne,
+            onUpdateGroup: _updateGroup, onRenameGroup: _renameGroup,
+          )),
+          ConnectPane(server: _selected, state: _conn, mode: _mode, onToggle: _toggleConnect,
+            onMode: (m) => setState(() => _mode = m), onTestPing: () { if (_selected != null) _pingOne(_selected!); }),
+        ]);
+    }
     return Scaffold(body: Row(children: [
-      _SideRail(index: _rail, onChange: (i) => setState(() => _rail = i)),
-      Expanded(child: ServersPane(
-        configs: _configs, query: _query, selected: _selected, subs: _subs,
-        onQuery: (q) => setState(() => _query = q),
-        onSelect: _select, onRemove: _remove, onRemoveGroup: _removeGroup, onPin: _togglePin,
-        onAdd: _addConfigs, onPingAll: _pingAll, onPingGroup: _pingGroup, onPingOne: _pingOne,
-        onUpdateGroup: _updateGroup, onRenameGroup: _renameGroup,
-      )),
-      ConnectPane(server: _selected, state: _conn, mode: _mode, onToggle: _toggleConnect,
-        onMode: (m) => setState(() => _mode = m), onTestPing: () { if (_selected != null) _pingOne(_selected!); }),
+      _SideRail(index: _rail, onChange: (i) => setState(() => _rail = i), onAdd: _openAdd),
+      Expanded(child: body),
     ]));
   }
+}
+
+class _Glass extends StatelessWidget {
+  final Widget child; const _Glass({required this.child});
+  @override
+  Widget build(BuildContext context) => Container(margin: const EdgeInsets.all(8), padding: const EdgeInsets.all(22), decoration: BoxDecoration(color: const Color(0xFF1B1D22), borderRadius: BorderRadius.circular(18), border: Border.all(color: Colors.white10)), child: child);
+}
+
+class StatsPane extends StatelessWidget {
+  final ProxyConfig? server; final ConnState state; final RouteMode mode; final int total; final int groups;
+  const StatsPane({super.key, required this.server, required this.state, required this.mode, required this.total, required this.groups});
+  Widget _stat(IconData ic, String label, String val) => Expanded(child: _Glass(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Icon(ic, color: kBrand, size: 26), const SizedBox(height: 14),
+    Text(val, style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w700)), const SizedBox(height: 4),
+    Text(label, style: const TextStyle(color: Colors.white54, fontSize: 13)),
+  ])));
+  @override
+  Widget build(BuildContext context) => Padding(padding: const EdgeInsets.all(20), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    const Padding(padding: EdgeInsets.fromLTRB(8, 8, 0, 4), child: Text('Статистика', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700))),
+    const SizedBox(height: 12),
+    Row(children: [_stat(Icons.dns_rounded, 'Серверов', '$total'), _stat(Icons.folder_rounded, 'Подписок', '$groups')]),
+    Row(children: [_stat(Icons.power_settings_new_rounded, 'Статус', state == ConnState.off ? 'Выключено' : 'Подключено'), _stat(Icons.alt_route_rounded, 'Режим', mode == RouteMode.proxy ? 'Proxy' : 'TUN')]),
+    _Glass(child: Row(children: [const Icon(Icons.bolt, color: kBrand), const SizedBox(width: 12), Expanded(child: Text(server == null ? 'Сервер не выбран' : server!.name, style: const TextStyle(color: Colors.white, fontSize: 15)))])),
+  ]));
+}
+
+class SettingsPane extends StatelessWidget {
+  final RouteMode mode; final ValueChanged<RouteMode> onMode;
+  const SettingsPane({super.key, required this.mode, required this.onMode});
+  @override
+  Widget build(BuildContext context) => Padding(padding: const EdgeInsets.all(20), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    const Padding(padding: EdgeInsets.fromLTRB(8, 8, 0, 4), child: Text('Настройки', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700))),
+    const SizedBox(height: 8),
+    _Glass(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text('Режим маршрутизации', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)), const SizedBox(height: 4),
+      const Text('Proxy — системный прокси (Xray). TUN — захват всего трафика (в разработке).', style: TextStyle(color: Colors.white54, fontSize: 13)), const SizedBox(height: 14),
+      SegmentedButton<RouteMode>(segments: const [
+        ButtonSegment(value: RouteMode.proxy, label: Text('Proxy'), icon: Icon(Icons.lan_rounded)),
+        ButtonSegment(value: RouteMode.tun, label: Text('TUN'), icon: Icon(Icons.vpn_lock_rounded)),
+      ], selected: {mode}, onSelectionChanged: (s) => onMode(s.first)),
+    ])),
+    const _Glass(child: Row(children: [Icon(Icons.info_outline, color: Colors.white54), SizedBox(width: 12), Expanded(child: Text('Конфиги hysteria2/tuic отображаются в списке, но подключение к ним требует отдельного клиента (скоро). vless/vmess/trojan/ss подключаются через Xray.', style: TextStyle(color: Colors.white60, fontSize: 13)))])),
+  ]));
+}
+
+class AboutPane extends StatelessWidget {
+  const AboutPane({super.key});
+  @override
+  Widget build(BuildContext context) => Center(child: _Glass(child: SizedBox(width: 360, child: Column(mainAxisSize: MainAxisSize.min, children: [
+    Container(width: 64, height: 64, decoration: BoxDecoration(color: kBrand, borderRadius: BorderRadius.circular(18)), child: const Icon(Icons.bolt, color: Colors.white, size: 36)),
+    const SizedBox(height: 16),
+    const Text('NST Tunnel', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700)), const SizedBox(height: 4),
+    const Text('Desktop 2.20.0', style: TextStyle(color: Colors.white54)), const SizedBox(height: 16),
+    const Text('Кросс-платформенный VPN-клиент на базе Xray.\nИмпорт подписок, тест пинга, Happ-style интерфейс.', textAlign: TextAlign.center, style: TextStyle(color: Colors.white60, fontSize: 13)),
+  ])))); 
 }
 
 extension IterFirst<T> on Iterable<T> { T? get firstOrNull => isEmpty ? null : first; }
 
 class _SideRail extends StatelessWidget {
-  final int index; final ValueChanged<int> onChange;
-  const _SideRail({required this.index, required this.onChange});
+  final int index; final ValueChanged<int> onChange; final VoidCallback onAdd;
+  const _SideRail({required this.index, required this.onChange, required this.onAdd});
   @override
   Widget build(BuildContext context) {
-    final items = [Icons.arrow_forward, Icons.add_box_outlined, Icons.public, Icons.settings_outlined, Icons.bar_chart, Icons.crop_free];
-    return Container(width: 64, color: kPanel, child: Column(children: [
+    final items = [Icons.dns_rounded, Icons.insights_rounded, Icons.settings_rounded];
+    final labels = ['Серверы', 'Статистика', 'Настройки'];
+    return Container(width: 76, color: const Color(0xFF15161A), child: Column(children: [
       const SizedBox(height: 18),
-      Container(width: 38, height: 38, decoration: BoxDecoration(gradient: const LinearGradient(colors: [kBrand, kBrandDim]), borderRadius: BorderRadius.circular(11)), child: const Icon(Icons.bolt, color: Colors.white, size: 22)),
-      const SizedBox(height: 22),
-      for (int i = 0; i < items.length; i++) Padding(padding: const EdgeInsets.symmetric(vertical: 6),
-        child: IconButton(onPressed: () => onChange(i), icon: Icon(items[i], color: index == i ? kBrand : Colors.white54, size: 22))),
+      Container(width: 44, height: 44, decoration: BoxDecoration(color: kBrand, borderRadius: BorderRadius.circular(13), boxShadow: [BoxShadow(color: kBrand.withOpacity(.45), blurRadius: 16, offset: const Offset(0, 4))]), child: const Icon(Icons.bolt, color: Colors.white, size: 24)),
+      const SizedBox(height: 10),
+      Tooltip(message: 'Добавить', child: InkWell(onTap: onAdd, borderRadius: BorderRadius.circular(12), child: Container(width: 48, height: 40, alignment: Alignment.center, decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white12)), child: const Icon(Icons.add_rounded, color: Colors.white70, size: 24)))),
+      const SizedBox(height: 16),
+      for (int i = 0; i < items.length; i++)
+        Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Tooltip(message: labels[i], child: InkWell(onTap: () => onChange(i), borderRadius: BorderRadius.circular(13),
+          child: AnimatedContainer(duration: const Duration(milliseconds: 180), width: 48, height: 48, decoration: BoxDecoration(color: index == i ? kBrand.withOpacity(.16) : Colors.transparent, borderRadius: BorderRadius.circular(13), border: Border.all(color: index == i ? kBrand.withOpacity(.5) : Colors.transparent)),
+          child: Icon(items[i], color: index == i ? kBrand : Colors.white54, size: 23))))),
       const Spacer(),
-      const Padding(padding: EdgeInsets.only(bottom: 14), child: Icon(Icons.info_outline, color: Colors.white38, size: 20)),
+      Tooltip(message: 'О программе', child: InkWell(onTap: () => onChange(3), borderRadius: BorderRadius.circular(12), child: Padding(padding: const EdgeInsets.only(bottom: 16, top: 8), child: Icon(Icons.info_outline_rounded, color: index == 3 ? kBrand : Colors.white38, size: 21)))),
     ]));
   }
 }
