@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 env:
-  XRAY_VERSION: "v1.8.23"
+  SINGBOX_VERSION: "1.11.4"
 
 jobs:
   windows:
@@ -39,17 +39,17 @@ jobs:
       - name: Build Windows release
         working-directory: desktop
         run: flutter build windows --release
-      - name: Download Xray-core (Windows)
+      - name: Download sing-box (Windows)
         shell: pwsh
         run: |
-          $url = "https://github.com/XTLS/Xray-core/releases/download/$env:XRAY_VERSION/Xray-windows-64.zip"
+          $ver = "$env:SINGBOX_VERSION"
+          $url = "https://github.com/SagerNet/sing-box/releases/download/v$ver/sing-box-$ver-windows-amd64.zip"
           Write-Host "Downloading $url"
-          Invoke-WebRequest -Uri $url -OutFile xray.zip
-          Expand-Archive -Path xray.zip -DestinationPath xray_tmp -Force
-          Copy-Item xray_tmp\xray.exe "desktop\build\windows\x64\runner\Release\xray.exe" -Force
-          if (Test-Path "xray_tmp\geoip.dat") { Copy-Item xray_tmp\geoip.dat "desktop\build\windows\x64\runner\Release\" -Force }
-          if (Test-Path "xray_tmp\geosite.dat") { Copy-Item xray_tmp\geosite.dat "desktop\build\windows\x64\runner\Release\" -Force }
-          Get-ChildItem "desktop\build\windows\x64\runner\Release\xray.exe" | Format-List Length, FullName
+          Invoke-WebRequest -Uri $url -OutFile sb.zip
+          Expand-Archive -Path sb.zip -DestinationPath sb_tmp -Force
+          $exe = Get-ChildItem -Path sb_tmp -Recurse -Filter sing-box.exe | Select-Object -First 1
+          Copy-Item $exe.FullName "desktop\build\windows\x64\runner\Release\sing-box.exe" -Force
+          Get-ChildItem "desktop\build\windows\x64\runner\Release\sing-box.exe" | Format-List Length, FullName
       - name: Derive version label from tag
         id: ver
         shell: pwsh
@@ -106,23 +106,23 @@ jobs:
           ver="${ver%-nst}"
           echo "version=$ver" >> "$GITHUB_OUTPUT"
           echo "version=$ver"
-      - name: Download Xray-core (macOS) and bundle, then create DMG
+      - name: Download sing-box (macOS) and bundle, then create DMG
         working-directory: desktop/build/macos/Build/Products/Release
         run: |
           set -e
-          ARCH_ASSET="Xray-macos-arm64-v8a.zip"
-          if [ "$(uname -m)" = "x86_64" ]; then ARCH_ASSET="Xray-macos-64.zip"; fi
-          echo "Downloading $ARCH_ASSET"
-          curl -L -o xray.zip "https://github.com/XTLS/Xray-core/releases/download/$XRAY_VERSION/$ARCH_ASSET"
-          unzip -o xray.zip -d xray_tmp
+          ver="$SINGBOX_VERSION"
+          ARCH="arm64"
+          if [ "$(uname -m)" = "x86_64" ]; then ARCH="amd64"; fi
+          echo "Downloading sing-box $ver $ARCH"
+          curl -L -o sb.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v$ver/sing-box-$ver-darwin-$ARCH.tar.gz"
+          mkdir -p sb_tmp && tar -xzf sb.tar.gz -C sb_tmp
+          BIN=$(find sb_tmp -name sing-box -type f | head -1)
 
           APP_ORIG=$(ls -d *.app | head -1)
           mv "$APP_ORIG" "NSTTunnel.app"
           mkdir -p "NSTTunnel.app/Contents/Resources"
-          cp xray_tmp/xray "NSTTunnel.app/Contents/Resources/xray"
-          chmod +x "NSTTunnel.app/Contents/Resources/xray"
-          [ -f xray_tmp/geoip.dat ] && cp xray_tmp/geoip.dat "NSTTunnel.app/Contents/Resources/" || true
-          [ -f xray_tmp/geosite.dat ] && cp xray_tmp/geosite.dat "NSTTunnel.app/Contents/Resources/" || true
+          cp "$BIN" "NSTTunnel.app/Contents/Resources/sing-box"
+          chmod +x "NSTTunnel.app/Contents/Resources/sing-box"
 
           STAGE=$(mktemp -d)
           cp -R NSTTunnel.app "$STAGE/"
