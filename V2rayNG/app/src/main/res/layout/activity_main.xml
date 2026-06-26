@@ -23,8 +23,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
+                android:background="@android:color/transparent" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -33,48 +32,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:indeterminateTint="#6C7BFF"
             android:visibility="gone" />
 
-        <!-- Hero connect button -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="280dp"
             android:clipChildren="false"
             android:clipToPadding="false">
 
             <View
-                android:layout_width="280dp"
-                android:layout_height="280dp"
+                android:layout_width="260dp"
+                android:layout_height="260dp"
                 android:layout_gravity="center"
                 android:background="@drawable/connect_glow_outer" />
 
             <View
-                android:layout_width="220dp"
-                android:layout_height="220dp"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:layout_gravity="center"
                 android:background="@drawable/connect_glow_inner" />
 
             <View
-                android:layout_width="170dp"
-                android:layout_height="170dp"
+                android:layout_width="156dp"
+                android:layout_height="156dp"
                 android:layout_gravity="center"
-                android:background="@drawable/connect_button_face"
-                android:alpha="0.96" />
+                android:background="@drawable/connect_button_face" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:clickable="true"
-                android:focusable="true"
                 android:contentDescription="@string/tasker_start_service"
-                android:src="@drawable/ic_play_24dp"
-                app:backgroundTint="@android:color/transparent"
-                app:elevation="0dp"
                 app:fabCustomSize="150dp"
-                app:maxImageSize="68dp"
+                app:maxImageSize="64dp"
                 app:tint="@android:color/white"
                 app:borderWidth="0dp" />
 
@@ -85,7 +76,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            app:tabGravity="fill"
             app:tabIndicatorColor="#6C7BFF"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@android:color/white"
@@ -136,8 +126,6 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/menu_drawer">
-
-    </com.google.android.material.navigation.NavigationView>
+        app:menu="@menu/menu_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
