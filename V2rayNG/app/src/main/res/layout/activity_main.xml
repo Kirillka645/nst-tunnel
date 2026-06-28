@@ -52,21 +52,17 @@
                 android:layout_gravity="center"
                 android:background="@drawable/connect_glow_inner" />
 
-            <View
-                android:layout_width="156dp"
-                android:layout_height="156dp"
-                android:layout_gravity="center"
-                android:background="@drawable/connect_button_face" />
-
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:contentDescription="@string/tasker_start_service"
+                android:src="@drawable/ic_play_24dp"
                 app:fabCustomSize="150dp"
                 app:maxImageSize="64dp"
                 app:tint="@android:color/white"
+                app:backgroundTint="@color/color_fab_inactive"
                 app:borderWidth="0dp" />
 
         </FrameLayout>
