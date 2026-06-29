@@ -10,16 +10,16 @@ import 'subscription.dart';
 
 void main() => runApp(const NstTunnelApp());
 
-const kBrand = Color(0xFFF97910);
-const kBrandDim = Color(0xFFB85A0B);
-const kBg = Color(0xFF0E0D10);
-const kPanel = Color(0xFF151318);
-const kSurface = Color(0xFF1C1A1E);
-const kSurface2 = Color(0xFF242128);
-const kGood = Color(0xFF34C759);
+const kBrand = Color(0xFF00F2FE);
+const kBrandDim = Color(0xFF00B4D8);
+const kBg = Color(0xFF0B0C0E);
+const kPanel = Color(0xFF141824);
+const kSurface = Color(0xFF1E2436);
+const kSurface2 = Color(0xFF283046);
+const kGood = Color(0xFF00E676);
 const kWarn = Color(0xFFFFB02E);
-const kBad = Color(0xFFE5484D);
-const kAccentBlue = Color(0xFF6E7BFF);
+const kBad = Color(0xFFFF5252);
+const kAccentBlue = Color(0xFF6C7BFF);
 
 class ProxyConfig {
   final String protocol, name, address, raw;
