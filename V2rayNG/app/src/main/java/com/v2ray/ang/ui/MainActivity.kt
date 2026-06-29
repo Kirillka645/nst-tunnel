@@ -127,8 +127,12 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
             }
         }.also { it.attach() }
 
-        val targetIndex = groups.indexOfFirst { it.id == mainViewModel.subscriptionId }.takeIf { it >= 0 } ?: (groups.size - 1)
-        binding.viewPager.setCurrentItem(targetIndex, false)
+        if (groups.isNotEmpty()) {
+            val targetIndex = groups.indexOfFirst { it.id == mainViewModel.subscriptionId }.takeIf { it >= 0 } ?: (groups.size - 1)
+            if (targetIndex in 0 until groups.size) {
+                binding.viewPager.setCurrentItem(targetIndex, false)
+            }
+        }
 
         binding.tabGroup.isVisible = groups.size > 1
     }

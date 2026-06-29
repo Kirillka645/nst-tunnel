@@ -263,7 +263,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         val groups = mutableListOf<GroupMapItem>()
-        if (MmkvManager.decodeSettingsBool(AppConfig.PREF_GROUP_ALL_DISPLAY)) {
+        if (MmkvManager.decodeSettingsBool(AppConfig.PREF_GROUP_ALL_DISPLAY) || subscriptions.isEmpty()) {
             groups.add(
                 GroupMapItem(
                     id = "",

@@ -257,9 +257,9 @@ class _HomeShellState extends State<HomeShell> {
     catch (e) { setState(() => _conn = ConnState.off); _toast('Ошибка подключения: ' + e.toString()); }
   }
 
-  @override
   void _openAdd() => showDialog(context: context, builder: (_) => AddDialog(onAdd: _addConfigs));
 
+  @override
   Widget build(BuildContext context) {
     if (_loading) return const Scaffold(body: Center(child: CircularProgressIndicator(color: kBrand)));
     Widget body;
