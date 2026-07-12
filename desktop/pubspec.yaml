@@ -1,7 +1,7 @@
 name: nst_tunnel
 description: NST Tunnel desktop client — import and manage your own configs.
 publish_to: 'none'
-version: 2.24.1+1736
+version: 2.25.0+1737
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

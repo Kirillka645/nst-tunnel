@@ -10,15 +10,16 @@ import 'subscription.dart';
 
 void main() => runApp(const NstTunnelApp());
 
-const kBrand = Color(0xFF00F2FE);
-const kBrandDim = Color(0xFF00B4D8);
-const kBg = Color(0xFF0B0C0E);
-const kPanel = Color(0xFF141824);
-const kSurface = Color(0xFF1E2436);
-const kSurface2 = Color(0xFF283046);
-const kGood = Color(0xFF00E676);
+// Happ-inspired deep indigo palette
+const kBrand = Color(0xFF6C7BFF);
+const kBrandDim = Color(0xFF5B63F5);
+const kBg = Color(0xFF0E1330);
+const kPanel = Color(0xFF141A3C);
+const kSurface = Color(0xFF1B1740);
+const kSurface2 = Color(0xFF242A52);
+const kGood = Color(0xFF83D6B5);
 const kWarn = Color(0xFFFFB02E);
-const kBad = Color(0xFFFF5252);
+const kBad = Color(0xFFFF8A80);
 const kAccentBlue = Color(0xFF6C7BFF);
 
 class ProxyConfig {
@@ -296,7 +297,17 @@ class _HomeShellState extends State<HomeShell> {
 class _Glass extends StatelessWidget {
   final Widget child; const _Glass({required this.child});
   @override
-  Widget build(BuildContext context) => Container(margin: const EdgeInsets.all(8), padding: const EdgeInsets.all(22), decoration: BoxDecoration(color: const Color(0xFF1B1D22), borderRadius: BorderRadius.circular(18), border: Border.all(color: Colors.white10)), child: child);
+  Widget build(BuildContext context) => Container(
+    margin: const EdgeInsets.all(8),
+    padding: const EdgeInsets.all(22),
+    decoration: BoxDecoration(
+      color: kSurface,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: Colors.white.withOpacity(0.08)),
+      boxShadow: [BoxShadow(color: kBrand.withOpacity(0.06), blurRadius: 24, offset: const Offset(0, 8))],
+    ),
+    child: child,
+  );
 }
 
 class StatsPane extends StatelessWidget {
@@ -326,13 +337,13 @@ class SettingsPane extends StatelessWidget {
     const SizedBox(height: 8),
     _Glass(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Text('Режим маршрутизации', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)), const SizedBox(height: 4),
-      const Text('Proxy — системный прокси (Xray). TUN — захват всего трафика (в разработке).', style: TextStyle(color: Colors.white54, fontSize: 13)), const SizedBox(height: 14),
+      const Text('Proxy — системный HTTP/SOCKS прокси (sing-box). TUN — захват всего трафика (скоро).', style: TextStyle(color: Colors.white54, fontSize: 13)), const SizedBox(height: 14),
       SegmentedButton<RouteMode>(segments: const [
         ButtonSegment(value: RouteMode.proxy, label: Text('Proxy'), icon: Icon(Icons.lan_rounded)),
         ButtonSegment(value: RouteMode.tun, label: Text('TUN'), icon: Icon(Icons.vpn_lock_rounded)),
       ], selected: {mode}, onSelectionChanged: (s) => onMode(s.first)),
     ])),
-    const _Glass(child: Row(children: [Icon(Icons.info_outline, color: Colors.white54), SizedBox(width: 12), Expanded(child: Text('Конфиги hysteria2/tuic отображаются в списке, но подключение к ним требует отдельного клиента (скоро). vless/vmess/trojan/ss подключаются через Xray.', style: TextStyle(color: Colors.white60, fontSize: 13)))])),
+    const _Glass(child: Row(children: [Icon(Icons.info_outline, color: Colors.white54), SizedBox(width: 12), Expanded(child: Text('Движок sing-box: vless, vmess, trojan, shadowsocks, hysteria2, hysteria, tuic (в т.ч. Reality / WS / gRPC).', style: TextStyle(color: Colors.white60, fontSize: 13)))])),
   ]));
 }
 
@@ -340,12 +351,12 @@ class AboutPane extends StatelessWidget {
   const AboutPane({super.key});
   @override
   Widget build(BuildContext context) => Center(child: _Glass(child: SizedBox(width: 360, child: Column(mainAxisSize: MainAxisSize.min, children: [
-    Container(width: 64, height: 64, decoration: BoxDecoration(color: kBrand, borderRadius: BorderRadius.circular(18)), child: const Icon(Icons.bolt, color: Colors.white, size: 36)),
+    Container(width: 64, height: 64, decoration: BoxDecoration(color: kBrand, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: kBrand.withOpacity(.4), blurRadius: 18)]), child: const Icon(Icons.power_settings_new_rounded, color: Colors.white, size: 36)),
     const SizedBox(height: 16),
     const Text('NST Tunnel', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700)), const SizedBox(height: 4),
-    const Text('Desktop 2.20.0', style: TextStyle(color: Colors.white54)), const SizedBox(height: 16),
-    const Text('Кросс-платформенный VPN-клиент на базе Xray.\nИмпорт подписок, тест пинга, Happ-style интерфейс.', textAlign: TextAlign.center, style: TextStyle(color: Colors.white60, fontSize: 13)),
-  ])))); 
+    const Text('Desktop 2.25.0', style: TextStyle(color: Colors.white54)), const SizedBox(height: 16),
+    const Text('Кросс-платформенный VPN-клиент на sing-box.\nИмпорт подписок, тест пинга, Happ-style интерфейс.', textAlign: TextAlign.center, style: TextStyle(color: Colors.white60, fontSize: 13)),
+  ]))));
 }
 
 extension IterFirst<T> on Iterable<T> { T? get firstOrNull => isEmpty ? null : first; }
@@ -357,9 +368,9 @@ class _SideRail extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [Icons.dns_rounded, Icons.insights_rounded, Icons.settings_rounded];
     final labels = ['Серверы', 'Статистика', 'Настройки'];
-    return Container(width: 76, color: const Color(0xFF15161A), child: Column(children: [
+    return Container(width: 76, color: kPanel, child: Column(children: [
       const SizedBox(height: 18),
-      Container(width: 44, height: 44, decoration: BoxDecoration(color: kBrand, borderRadius: BorderRadius.circular(13), boxShadow: [BoxShadow(color: kBrand.withOpacity(.45), blurRadius: 16, offset: const Offset(0, 4))]), child: const Icon(Icons.bolt, color: Colors.white, size: 24)),
+      Container(width: 44, height: 44, decoration: BoxDecoration(color: kBrand, borderRadius: BorderRadius.circular(13), boxShadow: [BoxShadow(color: kBrand.withOpacity(.45), blurRadius: 16, offset: const Offset(0, 4))]), child: const Icon(Icons.power_settings_new_rounded, color: Colors.white, size: 24)),
       const SizedBox(height: 10),
       Tooltip(message: 'Добавить', child: InkWell(onTap: onAdd, borderRadius: BorderRadius.circular(12), child: Container(width: 48, height: 40, alignment: Alignment.center, decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white12)), child: const Icon(Icons.add_rounded, color: Colors.white70, size: 24)))),
       const SizedBox(height: 16),
@@ -562,15 +573,20 @@ class _ConnectPaneState extends State<ConnectPane> with SingleTickerProviderStat
       child: Column(children: [
         const SizedBox(height: 48),
         GestureDetector(onTap: connecting ? null : widget.onToggle, child: AnimatedBuilder(animation: _pulse, builder: (context, _) {
-          final glow = on ? (0.30 + _pulse.value * 0.30) : 0.12;
+          final glow = on ? (0.35 + _pulse.value * 0.35) : (0.18 + _pulse.value * 0.12);
+          final core = on ? const Color(0xFF3D9B74) : kBrandDim;
+          final edge = on ? kGood : kAccentBlue;
           return Container(width: 210, height: 210, decoration: BoxDecoration(shape: BoxShape.circle,
-            gradient: RadialGradient(colors: on ? [const Color(0xFF1E9E48), kPanel] : [kSurface2, kPanel], radius: 0.95),
-            boxShadow: [BoxShadow(color: (on ? kGood : kAccentBlue).withOpacity(glow), blurRadius: 48, spreadRadius: 6)],
-            border: Border.all(color: (on ? kGood : kAccentBlue).withOpacity(0.5), width: 2)),
+            gradient: RadialGradient(colors: [core, kPanel], radius: 0.95),
+            boxShadow: [
+              BoxShadow(color: edge.withOpacity(glow), blurRadius: 52, spreadRadius: 4),
+              BoxShadow(color: edge.withOpacity(glow * 0.35), blurRadius: 80, spreadRadius: 12),
+            ],
+            border: Border.all(color: edge.withOpacity(0.55), width: 2)),
             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Icon(Icons.power_settings_new, color: on ? kGood : Colors.white, size: 72),
+              const Icon(Icons.power_settings_new_rounded, color: Colors.white, size: 72),
               const SizedBox(height: 6),
-              Text(on ? 'ВКЛ' : connecting ? '...' : '', style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w700, letterSpacing: 2)),
+              Text(on ? 'ON' : connecting ? '...' : 'OFF', style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w700, letterSpacing: 2)),
             ]));
         })),
         const SizedBox(height: 20),
