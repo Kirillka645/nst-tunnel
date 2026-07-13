@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Linear gradient only (radial gradients crashed on some devices in 2.22.0) -->
+<!-- Linear only — radial gradients crashed on some devices historically -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <gradient
-        android:angle="115"
-        android:centerColor="#141A3C"
-        android:endColor="#1B1740"
-        android:startColor="#0E1330"
+        android:angle="160"
+        android:centerColor="#0F1630"
+        android:endColor="#121A3A"
+        android:startColor="#0A0F22"
         android:type="linear" />
 </shape>

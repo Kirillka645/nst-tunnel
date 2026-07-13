@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Happ-inspired deep indigo / blue palette -->
-    <color name="colorPing">#83D6B5</color>
-    <color name="colorPingRed">#FF8A80</color>
-    <color name="colorConfigType">#9AA8FF</color>
+    <!-- NST Tunnel visual identity: deep indigo base + cyan brand accent (Happ-like density) -->
+    <color name="colorPing">#3DFFC8</color>
+    <color name="colorPingRed">#FF6B7A</color>
+    <color name="colorConfigType">#7DD3FC</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="color_fab_active">#5B63F5</color>
-    <color name="color_fab_inactive">#3F3AC9</color>
-    <color name="divider_color_light">#1F2440</color>
-    <color name="colorIndicator">#6C7BFF</color>
-    <color name="happ_tab_unselected">#9AA3C7</color>
-    <color name="happ_muted_text">#C7CCE8</color>
+    <color name="color_fab_active">#00D4AA</color>
+    <color name="color_fab_inactive">#5B6CFF</color>
+    <color name="divider_color_light">#243056</color>
+    <color name="colorIndicator">#00D4FF</color>
+    <color name="happ_tab_unselected">#8B95B8</color>
+    <color name="happ_muted_text">#C5CDE8</color>
+    <color name="nst_card">#161D38</color>
+    <color name="nst_card_stroke">#2A3358</color>
 
-    <color name="md_theme_primary">#6C7BFF</color>
-    <color name="md_theme_onPrimary">#0E1330</color>
-    <color name="md_theme_primaryContainer">#1F2440</color>
-    <color name="md_theme_onPrimaryContainer">#C7CCE8</color>
+    <color name="md_theme_primary">#5B6CFF</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#1A2248</color>
+    <color name="md_theme_onPrimaryContainer">#D6DBFF</color>
 
-    <color name="md_theme_secondary">#5B63F5</color>
-    <color name="md_theme_onSecondary">#FFFFFF</color>
-    <color name="md_theme_secondaryContainer">#141A3C</color>
-    <color name="md_theme_onSecondaryContainer">#C7CCE8</color>
+    <color name="md_theme_secondary">#00D4FF</color>
+    <color name="md_theme_onSecondary">#003544</color>
+    <color name="md_theme_secondaryContainer">#0E2A3A</color>
+    <color name="md_theme_onSecondaryContainer">#C5F0FF</color>
 
-    <color name="md_theme_tertiary">#83D6B5</color>
+    <color name="md_theme_tertiary">#00D4AA</color>
     <color name="md_theme_onTertiary">#00382E</color>
-    <color name="md_theme_tertiaryContainer">#005143</color>
+    <color name="md_theme_tertiaryContainer">#004D3D</color>
     <color name="md_theme_onTertiaryContainer">#A0F2D0</color>
 
     <color name="md_theme_error">#FFB4AB</color>
@@ -32,21 +34,21 @@
     <color name="md_theme_onError">#690005</color>
     <color name="md_theme_onErrorContainer">#FFDAD6</color>
 
-    <color name="md_theme_background">#0E1330</color>
-    <color name="md_theme_onBackground">#E6E1E5</color>
+    <color name="md_theme_background">#0A0F22</color>
+    <color name="md_theme_onBackground">#E8EAF4</color>
 
-    <color name="md_theme_surface">#141A3C</color>
-    <color name="md_theme_onSurface">#E6E1E5</color>
-    <color name="md_theme_surfaceVariant">#1B1740</color>
-    <color name="md_theme_onSurfaceVariant">#C7CCE8</color>
-    <color name="md_theme_inverseSurface">#E6E1E5</color>
-    <color name="md_theme_inverseOnSurface">#141A3C</color>
+    <color name="md_theme_surface">#121933</color>
+    <color name="md_theme_onSurface">#E8EAF4</color>
+    <color name="md_theme_surfaceVariant">#1A2240</color>
+    <color name="md_theme_onSurfaceVariant">#B8C0DC</color>
+    <color name="md_theme_inverseSurface">#E8EAF4</color>
+    <color name="md_theme_inverseOnSurface">#121933</color>
 
-    <color name="md_theme_outline">#3F4170</color>
-    <color name="md_theme_outlineVariant">#1F2440</color>
+    <color name="md_theme_outline">#3A4468</color>
+    <color name="md_theme_outlineVariant">#243056</color>
 
-    <color name="md_theme_inversePrimary">#6C7BFF</color>
+    <color name="md_theme_inversePrimary">#00D4FF</color>
     <color name="md_theme_shadow">#000000</color>
-    <color name="md_theme_surfaceTint">#6C7BFF</color>
+    <color name="md_theme_surfaceTint">#5B6CFF</color>
     <color name="md_theme_scrim">#000000</color>
 </resources>

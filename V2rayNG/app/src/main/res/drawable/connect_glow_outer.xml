@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Soft indigo halo behind the connect FAB (solid oval = safe on all API 24+) -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <solid android:color="#1A5B63F5" />
+    <solid android:color="#145B6CFF" />
 </shape>
