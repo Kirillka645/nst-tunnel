@@ -1,4 +1,4 @@
-﻿plugins {
+plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.jaredsburrows.license")
@@ -12,24 +12,30 @@ android {
         applicationId = "com.nstkir.nsttunnel"
         minSdk = 24
         targetSdk = 36
-        // Keep above legacy split versionCodes (4_000_000 + n) so BlueStacks upgrades install cleanly
-        versionCode = 4000742
-        versionName = "2.27.1"
+        versionCode = 4000750
+        versionName = "2.28.0"
         multiDexEnabled = true
 
-        // One fat APK with all ABIs вЂ” no per-ABI split downloads
-        ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+        val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
+        splits {
+            abi {
+                isEnable = true
+                reset()
+                if (abiFilterList != null && abiFilterList.isNotEmpty()) {
+                    include(*abiFilterList.toTypedArray())
+                } else {
+                    include(
+                        "arm64-v8a",
+                        "armeabi-v7a",
+                        "x86_64",
+                        "x86"
+                    )
+                }
+                isUniversalApk = abiFilterList.isNullOrEmpty()
+            }
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    // Explicitly disable ABI splits so Gradle emits a single universal APK
-    splits {
-        abi {
-            isEnable = false
-        }
     }
 
     buildTypes {
@@ -44,7 +50,6 @@ android {
 
     flavorDimensions.add("distribution")
     productFlavors {
-        // F-Droid keep for store packaging; default release is playstore
         create("fdroid") {
             dimension = "distribution"
             applicationIdSuffix = ".fdroid"
@@ -53,7 +58,6 @@ android {
         create("playstore") {
             dimension = "distribution"
             buildConfigField("String", "DISTRIBUTION", "\"Play Store\"")
-            isDefault = true
         }
     }
 
@@ -78,16 +82,45 @@ android {
     applicationVariants.all {
         val variant = this
         val isFdroid = variant.productFlavors.any { it.name == "fdroid" }
-        variant.outputs
-            .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
-            .forEach { output ->
-                // Single clean filename вЂ” no ABI suffix
-                output.outputFileName = if (isFdroid) {
-                    "NSTTunnel_${variant.versionName}-fdroid.apk"
-                } else {
-                    "NSTTunnel_${variant.versionName}.apk"
+        if (isFdroid) {
+            val versionCodes =
+                mapOf(
+                    "armeabi-v7a" to 2, "arm64-v8a" to 1, "x86" to 4, "x86_64" to 3, "universal" to 0
+                )
+
+            variant.outputs
+                .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
+                .forEach { output ->
+                    val abi = output.getFilter("ABI") ?: "universal"
+                    output.outputFileName = "NSTTunnel_${variant.versionName}-fdroid_${abi}.apk"
+                    if (versionCodes.containsKey(abi)) {
+                        output.versionCodeOverride =
+                            (100 * variant.versionCode + versionCodes[abi]!!).plus(5000000)
+                    } else {
+                        return@forEach
+                    }
                 }
-            }
+        } else {
+            val versionCodes =
+                mapOf("armeabi-v7a" to 4, "arm64-v8a" to 4, "x86" to 4, "x86_64" to 4, "universal" to 4)
+
+            variant.outputs
+                .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
+                .forEach { output ->
+                    val abi = if (output.getFilter("ABI") != null)
+                        output.getFilter("ABI")
+                    else
+                        "universal"
+
+                    output.outputFileName = "NSTTunnel_${variant.versionName}_${abi}.apk"
+                    if (versionCodes.containsKey(abi)) {
+                        output.versionCodeOverride =
+                            (1000000 * versionCodes[abi]!!).plus(variant.versionCode)
+                    } else {
+                        return@forEach
+                    }
+                }
+        }
     }
 
     buildFeatures {

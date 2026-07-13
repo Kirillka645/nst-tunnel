@@ -8,21 +8,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_main_gradient"
         android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:elevation="0dp">
+            android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent" />
+                android:layout_height="?attr/actionBarSize" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -52,13 +48,9 @@
                         android:id="@+id/tab_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        app:tabIndicatorColor="@color/md_theme_secondary"
                         app:tabIndicatorFullWidth="false"
                         app:tabMode="scrollable"
-                        app:tabSelectedTextColor="@color/colorWhite"
-                        app:tabTextAppearance="@style/TabLayoutTextStyle"
-                        app:tabTextColor="@color/happ_tab_unselected" />
+                        app:tabTextAppearance="@style/TabLayoutTextStyle" />
 
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/view_pager"
@@ -93,8 +85,7 @@
                             android:minLines="1"
                             android:paddingStart="@dimen/padding_spacing_dp16"
                             android:text="@string/connection_test_pending"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                            android:textColor="@color/happ_muted_text" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -106,7 +97,6 @@
                     android:layout_marginBottom="-16dp"
                     android:layout_marginEnd="@dimen/padding_spacing_dp16">
 
-                    <!-- Exact FAB pattern from v2.23.0 (known working on BlueStacks Pie64) -->
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/fab"
                         android:layout_width="wrap_content"
@@ -118,10 +108,9 @@
                         android:focusable="true"
                         android:nextFocusLeft="@+id/layout_test"
                         android:src="@drawable/ic_play_24dp"
-                        app:backgroundTint="@color/color_fab_inactive"
-                        app:layout_anchorGravity="bottom|right|end"
                         app:tint="@color/colorWhite"
-                        app:useCompatPadding="true" />
+                        app:useCompatPadding="true"
+                        app:layout_anchorGravity="bottom|right|end" />
 
                 </FrameLayout>
             </androidx.coordinatorlayout.widget.CoordinatorLayout>

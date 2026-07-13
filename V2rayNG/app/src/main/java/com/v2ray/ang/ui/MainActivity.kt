@@ -102,10 +102,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         SubscriptionUpdater.sync()
         mainViewModel.reloadServerList()
 
-        // POST_NOTIFICATIONS only on API 33+ (BlueStacks Pie = API 28)
-        if (android.os.Build.VERSION.SDK_INT >= 33) {
-            checkAndRequestPermission(PermissionType.POST_NOTIFICATIONS) {
-            }
+        checkAndRequestPermission(PermissionType.POST_NOTIFICATIONS) {
         }
     }
 
@@ -598,18 +595,13 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
      * If the selected server is in a different group, automatically switches to that group first.
      */
     private fun locateSelectedServer() {
-        // null = nothing selected; empty string is a valid "no subscription / All" group id
         val targetSubscriptionId = mainViewModel.findSubscriptionIdBySelect()
-        if (targetSubscriptionId == null) {
+        if (targetSubscriptionId.isNullOrEmpty()) {
             toast(R.string.title_file_chooser)
             return
         }
 
-        var targetGroupIndex = groupPagerAdapter.groups.indexOfFirst { it.id == targetSubscriptionId }
-        // Manual configs (empty subscriptionId) may only appear under the synthetic "All" tab
-        if (targetGroupIndex < 0) {
-            targetGroupIndex = groupPagerAdapter.groups.indexOfFirst { it.id.isEmpty() }
-        }
+        val targetGroupIndex = groupPagerAdapter.groups.indexOfFirst { it.id == targetSubscriptionId }
         if (targetGroupIndex < 0) {
             toast(R.string.toast_server_not_found_in_group)
             return

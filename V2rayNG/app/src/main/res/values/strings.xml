@@ -311,10 +311,6 @@
     <string name="title_sub_update">Update subscription</string>
     <string name="title_ping_all_server">Tcping config</string>
     <string name="title_real_ping_all_server">Real delay config</string>
-    <string name="action_ping_servers">Ping</string>
-    <string name="action_update_sub_short">Update</string>
-    <string name="connection_test_hint">Tap to test current connection</string>
-    <string name="connect_status_connecting">Connecting…</string>
     <string name="title_user_asset_setting">Asset files</string>
     <string name="title_sort_by_test_results">Sorting by test results</string>
     <string name="title_filter_config">Filter config</string>
