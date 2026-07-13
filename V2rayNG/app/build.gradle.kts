@@ -12,30 +12,23 @@ android {
         applicationId = "com.nstkir.nsttunnel"
         minSdk = 24
         targetSdk = 36
-        versionCode = 737
-        versionName = "2.25.0"
+        versionCode = 738
+        versionName = "2.26.0"
         multiDexEnabled = true
 
-        val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
-        splits {
-            abi {
-                isEnable = true
-                reset()
-                if (abiFilterList != null && abiFilterList.isNotEmpty()) {
-                    include(*abiFilterList.toTypedArray())
-                } else {
-                    include(
-                        "arm64-v8a",
-                        "armeabi-v7a",
-                        "x86_64",
-                        "x86"
-                    )
-                }
-                isUniversalApk = abiFilterList.isNullOrEmpty()
-            }
+        // One fat APK with all ABIs — no per-ABI split downloads
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // Explicitly disable ABI splits so Gradle emits a single universal APK
+    splits {
+        abi {
+            isEnable = false
+        }
     }
 
     buildTypes {
@@ -50,6 +43,7 @@ android {
 
     flavorDimensions.add("distribution")
     productFlavors {
+        // F-Droid keep for store packaging; default release is playstore
         create("fdroid") {
             dimension = "distribution"
             applicationIdSuffix = ".fdroid"
@@ -58,6 +52,7 @@ android {
         create("playstore") {
             dimension = "distribution"
             buildConfigField("String", "DISTRIBUTION", "\"Play Store\"")
+            isDefault = true
         }
     }
 
@@ -82,45 +77,16 @@ android {
     applicationVariants.all {
         val variant = this
         val isFdroid = variant.productFlavors.any { it.name == "fdroid" }
-        if (isFdroid) {
-            val versionCodes =
-                mapOf(
-                    "armeabi-v7a" to 2, "arm64-v8a" to 1, "x86" to 4, "x86_64" to 3, "universal" to 0
-                )
-
-            variant.outputs
-                .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
-                .forEach { output ->
-                    val abi = output.getFilter("ABI") ?: "universal"
-                    output.outputFileName = "NSTTunnel_${variant.versionName}-fdroid_${abi}.apk"
-                    if (versionCodes.containsKey(abi)) {
-                        output.versionCodeOverride =
-                            (100 * variant.versionCode + versionCodes[abi]!!).plus(5000000)
-                    } else {
-                        return@forEach
-                    }
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
+            .forEach { output ->
+                // Single clean filename — no ABI suffix
+                output.outputFileName = if (isFdroid) {
+                    "NSTTunnel_${variant.versionName}-fdroid.apk"
+                } else {
+                    "NSTTunnel_${variant.versionName}.apk"
                 }
-        } else {
-            val versionCodes =
-                mapOf("armeabi-v7a" to 4, "arm64-v8a" to 4, "x86" to 4, "x86_64" to 4, "universal" to 4)
-
-            variant.outputs
-                .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
-                .forEach { output ->
-                    val abi = if (output.getFilter("ABI") != null)
-                        output.getFilter("ABI")
-                    else
-                        "universal"
-
-                    output.outputFileName = "NSTTunnel_${variant.versionName}_${abi}.apk"
-                    if (versionCodes.containsKey(abi)) {
-                        output.versionCodeOverride =
-                            (1000000 * versionCodes[abi]!!).plus(variant.versionCode)
-                    } else {
-                        return@forEach
-                    }
-                }
-        }
+            }
     }
 
     buildFeatures {

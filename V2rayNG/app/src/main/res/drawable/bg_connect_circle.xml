@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Perfect circle fill for the connect control -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <solid android:color="#336C7BFF" />
+    <solid android:color="@color/color_fab_inactive" />
 </shape>

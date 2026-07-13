@@ -354,7 +354,7 @@ class AboutPane extends StatelessWidget {
     Container(width: 64, height: 64, decoration: BoxDecoration(color: kBrand, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: kBrand.withOpacity(.4), blurRadius: 18)]), child: const Icon(Icons.power_settings_new_rounded, color: Colors.white, size: 36)),
     const SizedBox(height: 16),
     const Text('NST Tunnel', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700)), const SizedBox(height: 4),
-    const Text('Desktop 2.25.0', style: TextStyle(color: Colors.white54)), const SizedBox(height: 16),
+    const Text('Desktop 2.26.0', style: TextStyle(color: Colors.white54)), const SizedBox(height: 16),
     const Text('Кросс-платформенный VPN-клиент на sing-box.\nИмпорт подписок, тест пинга, Happ-style интерфейс.', textAlign: TextAlign.center, style: TextStyle(color: Colors.white60, fontSize: 13)),
   ]))));
 }

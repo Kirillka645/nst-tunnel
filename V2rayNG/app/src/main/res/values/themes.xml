@@ -77,4 +77,21 @@
         <item name="colorPrimary">@color/color_fab_active</item>
     </style>
 
+    <!-- Force a true circle (Material3 large FAB defaults to squircle) -->
+    <style name="ShapeAppearanceOverlay.NST.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Widget.NST.QuickChip" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">40dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">22dp</item>
+        <item name="backgroundTint">@color/md_theme_surfaceVariant</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="iconTint">@color/colorWhite</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
 </resources>

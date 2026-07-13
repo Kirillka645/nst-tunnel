@@ -1,6 +1,12 @@
 # Ignore data and key store files
 *.dat
 *.jks
+_ks.b64
+_apk_out/
+_ref_apks/
+desktop/build/
+desktop/.dart_tool/
+desktop/.flutter-plugins-dependencies
 
 # Ignore output JSON file
 V2rayNG/app/release/output.json
