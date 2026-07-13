@@ -99,12 +99,18 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         binding.btnPing.setOnClickListener { handlePingServers() }
         binding.btnUpdateSub.setOnClickListener { handleUpdateSubscription() }
 
+        // Initial status text (observer may fire later)
+        binding.tvConnectStatus.text = getString(R.string.connection_not_connected)
+
         setupGroupTab()
         setupViewModel()
         SubscriptionUpdater.sync()
         mainViewModel.reloadServerList()
 
-        checkAndRequestPermission(PermissionType.POST_NOTIFICATIONS) {
+        // POST_NOTIFICATIONS only exists on API 33+; requesting it on BlueStacks Pie can misbehave
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            checkAndRequestPermission(PermissionType.POST_NOTIFICATIONS) {
+            }
         }
     }
 

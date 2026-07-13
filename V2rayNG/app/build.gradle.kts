@@ -12,8 +12,9 @@ android {
         applicationId = "com.nstkir.nsttunnel"
         minSdk = 24
         targetSdk = 36
-        versionCode = 738
-        versionName = "2.26.0"
+        // Keep above legacy split versionCodes (4_000_000 + n) so BlueStacks upgrades install cleanly
+        versionCode = 4000739
+        versionName = "2.26.1"
         multiDexEnabled = true
 
         // One fat APK with all ABIs — no per-ABI split downloads
