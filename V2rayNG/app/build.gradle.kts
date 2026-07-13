@@ -13,8 +13,8 @@ android {
         minSdk = 24
         targetSdk = 36
         // Keep above legacy split versionCodes (4_000_000 + n) so BlueStacks upgrades install cleanly
-        versionCode = 4000739
-        versionName = "2.26.1"
+        versionCode = 4000740
+        versionName = "2.26.2"
         multiDexEnabled = true
 
         // One fat APK with all ABIs — no per-ABI split downloads

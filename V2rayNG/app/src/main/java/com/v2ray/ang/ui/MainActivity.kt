@@ -96,18 +96,13 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
         binding.fab.setOnClickListener { handleFabAction() }
         binding.layoutTest.setOnClickListener { handleLayoutTestClick() }
-        binding.btnPing.setOnClickListener { handlePingServers() }
-        binding.btnUpdateSub.setOnClickListener { handleUpdateSubscription() }
-
-        // Initial status text (observer may fire later)
-        binding.tvConnectStatus.text = getString(R.string.connection_not_connected)
 
         setupGroupTab()
         setupViewModel()
         SubscriptionUpdater.sync()
         mainViewModel.reloadServerList()
 
-        // POST_NOTIFICATIONS only exists on API 33+; requesting it on BlueStacks Pie can misbehave
+        // POST_NOTIFICATIONS only on API 33+ (BlueStacks Pie = API 28)
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             checkAndRequestPermission(PermissionType.POST_NOTIFICATIONS) {
             }
@@ -196,44 +191,22 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private fun applyRunningState(isLoading: Boolean, isRunning: Boolean) {
         if (isLoading) {
             binding.fab.setImageResource(R.drawable.ic_fab_check)
-            binding.tvConnectStatus.text = getString(R.string.connect_status_connecting)
-            binding.tvConnectStatus.setTextColor(ContextCompat.getColor(this, R.color.happ_muted_text))
             return
         }
 
         if (isRunning) {
-            // Keep power icon — color alone signals ON (Happ-style)
-            binding.fab.setImageResource(R.drawable.ic_power_24dp)
+            binding.fab.setImageResource(R.drawable.ic_stop_24dp)
             binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_active))
             binding.fab.contentDescription = getString(R.string.action_stop_service)
-            binding.tvConnectStatus.text = getString(R.string.connection_connected)
-            binding.tvConnectStatus.setTextColor(ContextCompat.getColor(this, R.color.colorPing))
             setTestState(getString(R.string.connection_connected))
             binding.layoutTest.isFocusable = true
         } else {
-            binding.fab.setImageResource(R.drawable.ic_power_24dp)
+            binding.fab.setImageResource(R.drawable.ic_play_24dp)
             binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_inactive))
             binding.fab.contentDescription = getString(R.string.tasker_start_service)
-            binding.tvConnectStatus.text = getString(R.string.connection_not_connected)
-            binding.tvConnectStatus.setTextColor(ContextCompat.getColor(this, R.color.happ_muted_text))
             setTestState(getString(R.string.connection_not_connected))
             binding.layoutTest.isFocusable = false
         }
-    }
-
-    private fun handlePingServers() {
-        val count = mainViewModel.serversCache.count()
-        if (count == 0) {
-            toast(R.string.title_file_chooser)
-            return
-        }
-        toast(getString(R.string.connection_test_testing_count, count))
-        // Real delay is more useful for picking a node than TCP-only ping
-        mainViewModel.testAllRealPing()
-    }
-
-    private fun handleUpdateSubscription() {
-        importConfigViaSub()
     }
 
     override fun onResume() {
