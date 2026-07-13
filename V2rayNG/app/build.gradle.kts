@@ -1,4 +1,4 @@
-plugins {
+﻿plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.jaredsburrows.license")
@@ -13,11 +13,11 @@ android {
         minSdk = 24
         targetSdk = 36
         // Keep above legacy split versionCodes (4_000_000 + n) so BlueStacks upgrades install cleanly
-        versionCode = 4000741
-        versionName = "2.27.0"
+        versionCode = 4000742
+        versionName = "2.27.1"
         multiDexEnabled = true
 
-        // One fat APK with all ABIs — no per-ABI split downloads
+        // One fat APK with all ABIs вЂ” no per-ABI split downloads
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
         }
@@ -81,7 +81,7 @@ android {
         variant.outputs
             .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
             .forEach { output ->
-                // Single clean filename — no ABI suffix
+                // Single clean filename вЂ” no ABI suffix
                 output.outputFileName = if (isFdroid) {
                     "NSTTunnel_${variant.versionName}-fdroid.apk"
                 } else {

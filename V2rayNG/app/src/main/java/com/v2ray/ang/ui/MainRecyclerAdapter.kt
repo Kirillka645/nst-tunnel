@@ -69,9 +69,9 @@ class MainRecyclerAdapter(
                 holder.itemMainBinding.tvTestResult.setTextColor(ContextCompat.getColor(context, R.color.colorPing))
             }
 
-            // Selected server accent bar
+            // Selected server indicator
             if (guid == MmkvManager.getSelectServer()) {
-                holder.itemMainBinding.layoutIndicator.setBackgroundResource(R.drawable.bg_indicator_bar)
+                holder.itemMainBinding.layoutIndicator.setBackgroundResource(R.color.colorIndicator)
             } else {
                 holder.itemMainBinding.layoutIndicator.setBackgroundResource(0)
             }

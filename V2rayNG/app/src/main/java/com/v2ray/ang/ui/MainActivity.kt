@@ -96,7 +96,6 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
         binding.fab.setOnClickListener { handleFabAction() }
         binding.layoutTest.setOnClickListener { handleLayoutTestClick() }
-        binding.btnPing.setOnClickListener { handlePingServers() }
 
         setupGroupTab()
         setupViewModel()
@@ -196,29 +195,18 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         }
 
         if (isRunning) {
-            // Connected: mint power button (Happ-like ON state, NST colors)
-            binding.fab.setImageResource(R.drawable.ic_power_24dp)
+            binding.fab.setImageResource(R.drawable.ic_stop_24dp)
             binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_active))
             binding.fab.contentDescription = getString(R.string.action_stop_service)
             setTestState(getString(R.string.connection_connected))
             binding.layoutTest.isFocusable = true
         } else {
-            binding.fab.setImageResource(R.drawable.ic_power_24dp)
+            binding.fab.setImageResource(R.drawable.ic_play_24dp)
             binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_inactive))
             binding.fab.contentDescription = getString(R.string.tasker_start_service)
             setTestState(getString(R.string.connection_not_connected))
             binding.layoutTest.isFocusable = false
         }
-    }
-
-    private fun handlePingServers() {
-        val count = mainViewModel.serversCache.count()
-        if (count == 0) {
-            toast(R.string.title_file_chooser)
-            return
-        }
-        toast(getString(R.string.connection_test_testing_count, count))
-        mainViewModel.testAllRealPing()
     }
 
     override fun onResume() {
