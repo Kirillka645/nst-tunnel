@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPing">#009966</color>
-    <color name="colorPingRed">#D32F2F</color>
-    <color name="colorConfigType">#6C7BFF</color>
+    <!-- NST Happ palette: deep indigo + cyan accent -->
+    <color name="colorPing">#83D6B5</color>
+    <color name="colorPingRed">#FF8A80</color>
+    <color name="colorConfigType">#9AA8FF</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="color_fab_active">#5B63F5</color>
     <color name="color_fab_inactive">#3F3AC9</color>
     <color name="divider_color_light">#1F2440</color>
-    <color name="colorIndicator">@color/md_theme_primary</color>
+    <color name="colorIndicator">#6C7BFF</color>
+    <color name="happ_tab_unselected">#9AA3C7</color>
+    <color name="happ_muted_text">#C7CCE8</color>
+    <color name="nst_card">#181F42</color>
+    <color name="nst_card_stroke">#2A3260</color>
+    <color name="nst_status_bg">#121836</color>
+    <color name="nst_pill_bg">#222A55</color>
 
     <color name="md_theme_primary">#6C7BFF</color>
-    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_onPrimary">#0E1330</color>
     <color name="md_theme_primaryContainer">#1F2440</color>
     <color name="md_theme_onPrimaryContainer">#C7CCE8</color>
 
@@ -42,7 +49,7 @@
     <color name="md_theme_outline">#3F4170</color>
     <color name="md_theme_outlineVariant">#1F2440</color>
 
-    <color name="md_theme_inversePrimary">#5B63F5</color>
+    <color name="md_theme_inversePrimary">#6C7BFF</color>
     <color name="md_theme_shadow">#000000</color>
     <color name="md_theme_surfaceTint">#6C7BFF</color>
     <color name="md_theme_scrim">#000000</color>

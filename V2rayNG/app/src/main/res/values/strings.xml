@@ -355,6 +355,7 @@
     <string name="routing_settings_outbound_tag">outboundTag</string>
 
     <string name="connection_test_pending">Check Connectivity</string>
+    <string name="connection_test_hint">Tap to test current connection</string>
     <string name="connection_test_testing">Testing…</string>
     <string name="connection_test_testing_count">Testing %d configs…</string>
     <string name="connection_test_available">Success: Connection took %dms</string>

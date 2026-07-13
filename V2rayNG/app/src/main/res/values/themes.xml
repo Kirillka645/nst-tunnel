@@ -55,11 +55,12 @@
         <item name="android:navigationBarColor">@color/md_theme_surface</item>
     </style>
 
-    <!-- Day/Night theme: inherit common values and set light-mode-specific items -->
+    <!-- Dark Happ shell by default (deep indigo UI) -->
     <style name="AppThemeDayNight" parent="AppThemeBase">
-        <!-- day/night-specific overrides (light/default) -->
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+        <item name="android:statusBarColor">@color/md_theme_background</item>
+        <item name="android:navigationBarColor">@color/md_theme_background</item>
     </style>
 
     <!-- Theme without ActionBar -->

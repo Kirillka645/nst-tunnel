@@ -69,9 +69,9 @@ class MainRecyclerAdapter(
                 holder.itemMainBinding.tvTestResult.setTextColor(ContextCompat.getColor(context, R.color.colorPing))
             }
 
-            //layoutIndicator
+            //layoutIndicator — rounded accent bar when selected
             if (guid == MmkvManager.getSelectServer()) {
-                holder.itemMainBinding.layoutIndicator.setBackgroundResource(R.color.colorIndicator)
+                holder.itemMainBinding.layoutIndicator.setBackgroundResource(R.drawable.bg_indicator_bar)
             } else {
                 holder.itemMainBinding.layoutIndicator.setBackgroundResource(0)
             }
